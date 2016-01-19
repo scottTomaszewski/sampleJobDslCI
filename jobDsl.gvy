@@ -13,8 +13,8 @@ def modules = [
 modules.each { Map module ->
   def basePath = module.name
   def repo = "scottTomaszewski/$module.repo"
- 
-  
+
+
   folder(basePath) {
       description "Jobs associated with the $module.name module"
   }
@@ -29,7 +29,7 @@ modules.each { Map module ->
     showPipelineParameters()
     refreshFrequency(60)
   }
-  
+
   job("$basePath/promote-to-release") {
       parameters {
           stringParam 'host'
@@ -43,7 +43,7 @@ modules.each { Map module ->
       scm {
           github repo
       }
-      
+
       wrappers {
         configFiles {
             mavenSettings('MySettings') {
@@ -51,9 +51,9 @@ modules.each { Map module ->
             }
         }
       }
-  
+
       steps {
-          maven('versions:set -DnewVersion=\'0.0.${BUILD_NUMBER}-$basePath\'') 
+          maven("versions:set -DnewVersion=\'0.0.${BUILD_NUMBER}-$basePath\'") 
           maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
           def script = '''
               CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
@@ -67,7 +67,7 @@ modules.each { Map module ->
           }
       }
   }
-  
+
   job("$basePath/integration-tests") {
       scm {
           github repo
@@ -83,7 +83,7 @@ modules.each { Map module ->
           downstream("$basePath/promote-to-staging", 'SUCCESS')
       }
   }
-  
+
   job("$basePath/build") {
       scm {
           github repo
@@ -107,6 +107,6 @@ modules.each { Map module ->
       publishers {
           downstream("$basePath/integration-tests", 'SUCCESS')
       }
-      
+
   }
 }
