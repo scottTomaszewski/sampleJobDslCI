@@ -53,7 +53,7 @@ modules.each { Map module ->
       }
 
       steps {
-          maven("versions:set -DnewVersion=\'0.0.${BUILD_NUMBER}-$basePath\'") 
+          maven("versions:set -DnewVersion=\'0.0.\${BUILD_NUMBER}-$basePath\'")
           maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
           def script = '''
               CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
