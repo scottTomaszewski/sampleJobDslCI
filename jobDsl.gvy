@@ -59,8 +59,8 @@ modules.each { Map module ->
               CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
               PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
               echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
-              echo "CDM=$CDM_VAR" > env.properties
-              echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" > env.properties
+              echo "CDM=$CDM_VAR" >> env.properties
+              echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
           '''
           shell script
           environmentVariables {
