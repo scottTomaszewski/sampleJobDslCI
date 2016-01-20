@@ -54,18 +54,32 @@ modules.each { Map module ->
 
       steps {
           def script = '''
+              # evaluate cdm version from property
               CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
+
+              # evaluate declared project version from GAV
               PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
-              SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
+
+              # remove "-SNAPSHOT" from project version
               WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
+
+              # release version as MAJOR.MINOR.BUILD_NUMBER.SUFFIX
+              SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
               RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${BUILD_NUMBER}\\4#"`
-              echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
+
+              # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
+              NEXT_VERSION=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
+
+              # Add properties for EnvInject jenkins plugin
               echo "CDM=$CDM_VAR" >> env.properties
               echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
               echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
+
+              # print out description for Description Setter jenkins plugin
               echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
           '''
           shell script
+
           environmentVariables {
             propertiesFile('env.properties')
           }
@@ -73,8 +87,14 @@ modules.each { Map module ->
           wrappers {
               buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
           }
+
+          # set release version on poms (temp: add basePath since using same git repo)
           maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}-$basePath\'")
+
+          # test and deploy to nexus
           maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
+
+          # increment and update to new version
           maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
       }
   }
