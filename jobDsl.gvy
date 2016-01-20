@@ -177,8 +177,11 @@ modules.each { Map module ->
               PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
               echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
               # TODO: remove this
-              mkdir target
+              mkdir -p target
               touch target/foo.txt
+
+              # archive target dir
+              rm -f target.zip && zip -r target.zip target
           '''
           shell script
           buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
@@ -189,7 +192,7 @@ modules.each { Map module ->
 
     publishers {
         archiveArtifacts {
-            pattern('target/*')
+            pattern('target.zip')
             onlyIfSuccessful()
         }
         downstreamParameterized {
