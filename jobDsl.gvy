@@ -89,13 +89,13 @@ modules.each { Map module ->
               buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
           }
 
-          # set release version on poms (temp: add basePath since using same git repo)
+          // set release version on poms (temp: add basePath since using same git repo)
           maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}-$basePath\'")
 
-          # test and deploy to nexus
+          // test and deploy to nexus
           maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
 
-          # increment and update to new version
+          // increment and update to new version
           maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
       }
   }
