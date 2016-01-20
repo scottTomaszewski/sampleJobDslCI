@@ -63,7 +63,7 @@ modules.each { Map module ->
               echo "CDM=$CDM_VAR" >> env.properties
               echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
               echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
-              echo "DESCRIPTION CDM=$CDM_VAR \($RELEASE_VER_VAR\)"
+              echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
           '''
           shell script
           environmentVariables {
