@@ -62,7 +62,20 @@ modules.each { Map module ->
       }
 
       steps {
+          copyArtifacts(build) {
+              includePatterns('*')
+              excludePatterns()
+              targetDirectory('')
+              flatten()
+              optional()
+              buildSelector {
+                  buildNumber("\$ARTIFACT_BUILD_NUMBER")
+              }
+          }
+
           def script = '''
+              ls
+
               # prepare git
               git config user.name "Jenkins"
               git config user.email "DevOps_Team@FIXME.com"
@@ -163,8 +176,20 @@ modules.each { Map module ->
               buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
           }
       }
-      publishers {
-          downstream(integrationTests, 'SUCCESS')
-      }
+
+    publishers {
+        archiveArtifacts {
+            pattern('target/*')
+            onlyIfSuccessful()
+        }
+        downstreamParameterized {
+            trigger('integrationTests') {
+                condition('SUCCESS')
+                parameters {
+                  predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
+                }
+            }
+        }
+    }
   }
 }
