@@ -1,13 +1,13 @@
 def modules = [
     [name: 'disclosures', repo: 'ba'],
-    [name: 'master-servicing', repo: 'ba'],
-    [name: 'bond-admin', repo: 'ba'],
-    [name: 'interfaces', repo: 'ba'],
-    [name: 'calc-service', repo: 'ba'],
-    [name: 'issuance', repo: 'ba'],
-    [name: 'tax-service', repo: 'ba'],
-    [name: 'data-mart', repo: 'ba'],
-    [name: 'io-util', repo: 'ba'],
+    //[name: 'master-servicing', repo: 'ba'],
+    //[name: 'bond-admin', repo: 'ba'],
+    //[name: 'interfaces', repo: 'ba'],
+    //[name: 'calc-service', repo: 'ba'],
+    //[name: 'issuance', repo: 'ba'],
+    //[name: 'tax-service', repo: 'ba'],
+    //[name: 'data-mart', repo: 'ba'],
+    //[name: 'io-util', repo: 'ba'],
 ]
 
 modules.each { Map module ->
