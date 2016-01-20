@@ -149,8 +149,13 @@ modules.each { Map module ->
               buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
           }
       }
-      publishers {
-          downstream(releaseToStaging, 'SUCCESS')
+      downstreamParameterized {
+          trigger(integrationTests) {
+              condition('SUCCESS')
+              parameters {
+                predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
+              }
+          }
       }
   }
 
@@ -183,7 +188,7 @@ modules.each { Map module ->
             onlyIfSuccessful()
         }
         downstreamParameterized {
-            trigger('integrationTests') {
+            trigger(integrationTests) {
                 condition('SUCCESS')
                 parameters {
                   predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
