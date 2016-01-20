@@ -63,13 +63,13 @@ modules.each { Map module ->
               echo "CDM=$CDM_VAR" >> env.properties
               echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
               echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
-
+              echo "DESCRIPTION CDM=$CDM_VAR \($RELEASE_VER_VAR\)"
           '''
           shell script
           environmentVariables {
             propertiesFile('env.properties')
           }
-          buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
+          buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
           wrappers {
               buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
           }
