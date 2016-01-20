@@ -31,6 +31,8 @@ modules.each { Map module ->
   }
 
   job("$basePath/promote-to-release") {
+      description("Job for promoting successful $basePath releases from the staging artifact repository to the public releases artifact repository")
+
       parameters {
           stringParam 'host'
       }
@@ -39,7 +41,9 @@ modules.each { Map module ->
       }
   }
 
-  job("$basePath/promote-to-staging") {
+  job("$basePath/release-to-staging") {
+      description("Job for testing $basePath then releasing successful builds to the staging artifact repository")
+
       scm {
           github repo
       }
@@ -112,6 +116,8 @@ modules.each { Map module ->
   }
 
   job("$basePath/integration-tests") {
+      description("Job for running integration tests for $basePath")
+
       scm {
           github repo
       }
@@ -128,6 +134,8 @@ modules.each { Map module ->
   }
 
   job("$basePath/build") {
+      description("Job for running basic unit tests for $basePath.  Is triggered by polling git scm.")
+
       scm {
           github repo
       }
@@ -150,6 +158,5 @@ modules.each { Map module ->
       publishers {
           downstream("$basePath/integration-tests", 'SUCCESS')
       }
-
   }
 }
