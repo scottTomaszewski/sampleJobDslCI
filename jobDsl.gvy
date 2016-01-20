@@ -134,7 +134,7 @@ modules.each { Map module ->
           }
       }
       publishers {
-          downstream(promoteToStaging, 'SUCCESS')
+          downstream(releaseToStaging, 'SUCCESS')
       }
   }
 
