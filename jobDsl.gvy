@@ -149,13 +149,15 @@ modules.each { Map module ->
               buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
           }
       }
-      downstreamParameterized {
-          trigger(integrationTests) {
-              condition('SUCCESS')
-              parameters {
-                predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
-              }
-          }
+      publishers {
+        downstreamParameterized {
+            trigger(integrationTests) {
+                condition('SUCCESS')
+                parameters {
+                  predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
+                }
+            }
+        }
       }
   }
 
