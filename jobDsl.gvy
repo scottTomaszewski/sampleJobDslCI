@@ -151,7 +151,7 @@ modules.each { Map module ->
       }
       publishers {
         downstreamParameterized {
-            trigger(integrationTests) {
+            trigger(releaseToStaging) {
                 condition('SUCCESS')
                 parameters {
                   predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
