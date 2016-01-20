@@ -54,6 +54,11 @@ modules.each { Map module ->
 
       steps {
           def script = '''
+              # prepare git
+              git config user.name "Jenkins"
+              git config user.email "DevOps_Team@FIXME.com"
+              git config push.default simple
+
               # evaluate cdm version from property
               CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
 
@@ -89,14 +94,20 @@ modules.each { Map module ->
               buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
           }
 
-          // set release version on poms (temp: add basePath since using same git repo)
+          // set release version on poms (temp: add basePath since using same git repo) and commit
           maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}-$basePath\'")
+          shell "git commit -am '[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}'"
 
-          // test and deploy to nexus
+          // test and deploy to nexus, then tag
           maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
+          shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
+
+          // switch to original branch
+          shell "git checkout -"
 
           // increment and update to new version
           maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
+          shell "git commit -am '[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}' # TODO && git push"
       }
   }
 
