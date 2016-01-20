@@ -74,7 +74,8 @@ modules.each { Map module ->
           }
 
           def script = '''
-              ls
+              # unzip the target directory
+              unzip target.zip
 
               # prepare git
               git config user.name "Jenkins"
