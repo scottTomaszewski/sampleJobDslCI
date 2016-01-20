@@ -74,42 +74,42 @@ modules.each { Map module ->
             }
 
             def script = '''
-              # unzip the target directory
-              unzip target.zip
+                # unzip the target directory
+                unzip target.zip
 
-              # prepare git
-              git config user.name "Jenkins"
-              git config user.email "DevOps_Team@FIXME.com"
-              git config push.default simple
+                # prepare git
+                git config user.name "Jenkins"
+                git config user.email "DevOps_Team@FIXME.com"
+                git config push.default simple
 
-              # evaluate cdm version from property
-              CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
+                # evaluate cdm version from property
+                CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
 
-              # evaluate declared project version from GAV
-              PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
+                # evaluate declared project version from GAV
+                PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
 
-              # remove "-SNAPSHOT" from project version
-              WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
+                # remove "-SNAPSHOT" from project version
+                WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
 
-              # release version as MAJOR.MINOR.BUILD_NUMBER.SUFFIX
-              SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-              RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${BUILD_NUMBER}\\4#"`
+                # release version as MAJOR.MINOR.BUILD_NUMBER.SUFFIX
+                SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
+                RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${BUILD_NUMBER}\\4#"`
 
-              # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
-              NEXT_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
+                # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
+                NEXT_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
 
-              # create a branch for safekeeping
-              git checkout -b staging-v$RELEASE_VER_VAR
+                # create a branch for safekeeping
+                git checkout -b staging-v$RELEASE_VER_VAR
 
-              # Add properties for EnvInject jenkins plugin
-              echo "CDM=$CDM_VAR" >> env.properties
-              echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
-              echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
-              echo "NEXT_VERSION=$NEXT_VER_VAR" >> env.properties
+                # Add properties for EnvInject jenkins plugin
+                echo "CDM=$CDM_VAR" >> env.properties
+                echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
+                echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
+                echo "NEXT_VERSION=$NEXT_VER_VAR" >> env.properties
 
-              # print out description for Description Setter jenkins plugin
-              echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
-          '''
+                # print out description for Description Setter jenkins plugin
+                echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
+            '''
             shell script
 
             environmentVariables {
@@ -174,16 +174,16 @@ modules.each { Map module ->
         steps {
             maven('clean install')
             def script = '''
-              CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
-              PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
-              echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
-              # TODO: remove this
-              mkdir -p target
-              touch target/foo.txt
+                CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
+                PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
+                echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
+                # TODO: remove this
+                mkdir -p target
+                touch target/foo.txt
 
-              # archive target dir
-              rm -f target.zip && zip -r target.zip target
-          '''
+                # archive target dir
+                rm -f target.zip && zip -r target.zip target
+            '''
             shell script
             buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
             wrappers {
