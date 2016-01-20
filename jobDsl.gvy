@@ -14,7 +14,6 @@ modules.each { Map module ->
   def basePath = module.name
   def repo = "scottTomaszewski/$module.repo"
 
-
   folder(basePath) {
       description "Jobs associated with the $module.name module"
   }
@@ -30,7 +29,13 @@ modules.each { Map module ->
     refreshFrequency(60)
   }
 
-  job("$basePath/promote-to-release") {
+  // Job names
+  def promoteToRelease = "$basePath/promote-to-release"
+  def releaseToStaging = "$basePath/release-to-staging"
+  def integrationTests = "$basePath/integration-tests"
+  def build = "$basePath/build"
+
+  job(promoteToRelease) {
       description("Job for promoting successful $basePath releases from the staging artifact repository to the public releases artifact repository")
 
       parameters {
@@ -41,7 +46,7 @@ modules.each { Map module ->
       }
   }
 
-  job("$basePath/release-to-staging") {
+  job(releaseToStaging) {
       description("Job for testing $basePath then releasing successful builds to the staging artifact repository")
 
       scm {
@@ -115,7 +120,7 @@ modules.each { Map module ->
       }
   }
 
-  job("$basePath/integration-tests") {
+  job(integrationTests) {
       description("Job for running integration tests for $basePath")
 
       scm {
@@ -129,11 +134,11 @@ modules.each { Map module ->
           }
       }
       publishers {
-          downstream("$basePath/promote-to-staging", 'SUCCESS')
+          downstream(promoteToStaging, 'SUCCESS')
       }
   }
 
-  job("$basePath/build") {
+  job(build) {
       description("Job for running basic unit tests for $basePath.  Is triggered by polling git scm.")
 
       scm {
@@ -156,7 +161,7 @@ modules.each { Map module ->
           }
       }
       publishers {
-          downstream("$basePath/integration-tests", 'SUCCESS')
+          downstream(integrationTests, 'SUCCESS')
       }
   }
 }
