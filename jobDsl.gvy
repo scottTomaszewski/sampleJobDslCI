@@ -84,6 +84,9 @@ modules.each { Map module ->
               # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
               NEXT_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
 
+              # create a branch for safekeeping
+              git checkout -b staging-v$RELEASE_VER_VAR
+
               # Add properties for EnvInject jenkins plugin
               echo "CDM=$CDM_VAR" >> env.properties
               echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
