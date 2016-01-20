@@ -68,12 +68,13 @@ modules.each { Map module ->
               RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${BUILD_NUMBER}\\4#"`
 
               # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
-              NEXT_VERSION=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
+              NEXT_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
 
               # Add properties for EnvInject jenkins plugin
               echo "CDM=$CDM_VAR" >> env.properties
               echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
               echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
+              echo "NEXT_VERSION=$NEXT_VER_VAR" >> env.properties
 
               # print out description for Description Setter jenkins plugin
               echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
@@ -95,7 +96,7 @@ modules.each { Map module ->
           maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
 
           # increment and update to new version
-          maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
+          maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
       }
   }
 
