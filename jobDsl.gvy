@@ -176,6 +176,9 @@ modules.each { Map module ->
               CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
               PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
               echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
+              # TODO: remove this
+              mkdir target
+              touch target/foo.txt
           '''
           shell script
           buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
