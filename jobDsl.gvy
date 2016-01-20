@@ -56,10 +56,13 @@ modules.each { Map module ->
           def script = '''
               CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
               PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
+              SEMVER='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
+              WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
+              RELEASE_VER_VAR=`echo ${WITHOUT_SNAPSHOT} | sed -e "s#$SEMVER#\1.\2.${BUILD_NUMBER}\4#"`
               echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
               echo "CDM=$CDM_VAR" >> env.properties
               echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
-              echo "RELEASE_VERSION=${PROJECT_VERSION_VAR%-SNAPSHOT}" >> env.properties
+              echo "RELEASE_VERSION=${RELEASE_VER_VAR}" >> env.properties
           '''
           shell script
           environmentVariables {
@@ -71,6 +74,7 @@ modules.each { Map module ->
           }
           maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}-$basePath\'")
           maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
+          maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
       }
   }
 
