@@ -76,11 +76,11 @@ modules.each { Map module ->
                 # remove "-SNAPSHOT" from project version
                 WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
 
-                # release version as MAJOR.MINOR.BUILD_NUMBER.SUFFIX
+                # release version as MAJOR.MINOR.GIT_COMMIT_COUNT.SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
                 RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
 
-                # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
+                # next version as MAJOR.MINOR.[GIT_COMMIT_COUNT+1].SUFFIX
                 NEXT_VER_VAR=`echo $PROJECT_VERSION_VAR | sed -e "s#$SEMVER#\\1.\\2.$((GIT_COMMIT_COUNT+1))\\4#"`
 
                 # create a branch for safekeeping
@@ -106,7 +106,7 @@ modules.each { Map module ->
             }
 
             // set release version on poms (temp: add basePath since using same git repo) and commit
-            maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}-$basePath\'")
+            maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
             shell "git commit -am '[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}'"
 
             // test and deploy to nexus, then tag
@@ -127,7 +127,7 @@ modules.each { Map module ->
                     condition('SUCCESS')
                     parameters {
                         predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
-                        predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}-$basePath")
+                        predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
                     }
                 }
             }
