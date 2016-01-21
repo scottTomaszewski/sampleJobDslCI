@@ -46,7 +46,10 @@ modules.each { Map module ->
         }
 
         wrappers {
+            // clean workspace
             preBuildCleanup()
+
+            // Add maven settings.xml from Managed Config Files
             configFiles {
                 mavenSettings('MySettings') {
                     variable('SETTINGS_CONFIG')
@@ -149,6 +152,7 @@ modules.each { Map module ->
         }
 
         wrappers {
+            // clean workspace
             preBuildCleanup()
         }
 
@@ -165,6 +169,7 @@ modules.each { Map module ->
         description("Job for promoting successful $basePath releases from the staging artifact repository to the public releases artifact repository")
 
         wrappers {
+            // clean workspace
             preBuildCleanup()
         }
 
