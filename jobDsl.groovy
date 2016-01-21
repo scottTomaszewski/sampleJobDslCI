@@ -30,12 +30,11 @@ modules.each { Map module ->
     }
 
     // Job names
-    def promoteToRelease = "$basePath/promote-to-release"
-    def releaseToStaging = "$basePath/release-to-staging"
+    def buildAndReleaseToStaging = "$basePath/release-to-staging"
     def integrationTests = "$basePath/integration-tests"
-    def build = "$basePath/build"
+    def promoteToRelease = "$basePath/promote-to-release"
 
-    job(releaseToStaging) {
+    job(buildAndReleaseToStaging) {
         description("Job for testing $basePath then releasing successful builds to the staging artifact repository")
 
         scm {
@@ -131,7 +130,7 @@ modules.each { Map module ->
         }
         publishers {
             downstreamParameterized {
-                trigger(releaseToStaging) {
+                trigger(buildAndReleaseToStaging) {
                     condition('SUCCESS')
                     parameters {
                         predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
