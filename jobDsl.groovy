@@ -83,13 +83,6 @@ modules.each { Map module ->
                 # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
                 NEXT_VER_VAR=`echo $PROJECT_VERSION_VAR | sed -e "s#$SEMVER#\\1.\\2.$((GIT_COMMIT_COUNT+1))\\4#"`
 
-                # TODO - temp, remove branch if it exists already
-                git rev-parse --verify
-                if [ $? = 0 ]
-                then
-                  git branch --delete staging-v$RELEASE_VER_VAR
-                fi
-
                 # create a branch for safekeeping
                 git checkout -b staging-v$RELEASE_VER_VAR
 
@@ -126,9 +119,6 @@ modules.each { Map module ->
             // increment and update to new version
             maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
             shell "git commit -am '[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}' # TODO && git push"
-
-            // remove the staging branch
-            shell "git branch --delete staging-\${RELEASE_VERSION}"
         }
 
         publishers {
