@@ -1,5 +1,5 @@
 def modules = [
-        [name: 'disclosures', repo: 'ba'],
+        [name: 'disclosures', repo: 'ba', branches: ['master']],
         //[name: 'master-servicing', repo: 'ba'],
         //[name: 'bond-admin', repo: 'ba'],
         //[name: 'interfaces', repo: 'ba'],
@@ -11,54 +11,61 @@ def modules = [
 ]
 
 modules.each { Map module ->
-    def basePath = module.name
+    def modulePath = module.name
     def repo = "scottTomaszewski/$module.repo"
 
-    folder(basePath) {
+    folder(branchPath) {
         description "Jobs associated with the $module.name module"
     }
 
-    // Job names
-    def buildAndReleaseToStaging = "$basePath/release-to-staging"
-    def integrationTests = "$basePath/integration-tests"
-    def promoteToRelease = "$basePath/promote-to-release"
+    module.branches.each { Map branch ->
+        def branchPath = "$modulePath-$branch"
 
-    buildPipelineView("$basePath/pipeline") {
-        filterBuildQueue()
-        filterExecutors()
-        title("$basePath CI Pipeline")
-        displayedBuilds(5)
-        selectedJob(buildAndReleaseToStaging)
-        alwaysAllowManualTrigger()
-        showPipelineParameters()
-        refreshFrequency(5)
-    }
-
-    job(buildAndReleaseToStaging) {
-        description("Job for testing $basePath then releasing successful builds to the staging artifact repository")
-
-        scm {
-            github repo
+        folder(branchPath) {
+            description "Jobs associated with the $module.name module on the $branch branch"
         }
 
-        triggers {
-            scm 'H/2 * * * *'
+        // Job names
+        def buildAndReleaseToStaging = "$branchPath/release-to-staging"
+        def integrationTests = "$branchPath/integration-tests"
+        def promoteToRelease = "$branchPath/promote-to-release"
+
+        buildPipelineView("$branchPath/pipeline") {
+            filterBuildQueue()
+            filterExecutors()
+            title("$branchPath CI Pipeline")
+            displayedBuilds(5)
+            selectedJob(buildAndReleaseToStaging)
+            alwaysAllowManualTrigger()
+            showPipelineParameters()
+            refreshFrequency(5)
         }
 
-        wrappers {
-            // clean workspace
-            preBuildCleanup()
+        job(buildAndReleaseToStaging) {
+            description("Job for testing $branchPath then releasing successful builds to the staging artifact repository")
 
-            // Add maven settings.xml from Managed Config Files
-            configFiles {
-                mavenSettings('MySettings') {
-                    variable('SETTINGS_CONFIG')
+            scm {
+                github repo
+            }
+
+            triggers {
+                scm 'H/2 * * * *'
+            }
+
+            wrappers {
+                // clean workspace
+                preBuildCleanup()
+
+                // Add maven settings.xml from Managed Config Files
+                configFiles {
+                    mavenSettings('MySettings') {
+                        variable('SETTINGS_CONFIG')
+                    }
                 }
             }
-        }
 
-        steps {
-            def script = '''
+            steps {
+                def script = '''
                 # prepare git
                 git config user.name "Jenkins"
                 git config user.email "DevOps_Team@FIXME.com"
@@ -95,76 +102,77 @@ modules.each { Map module ->
                 # print out description for Description Setter jenkins plugin
                 echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
             '''
-            shell script
+                shell script
 
-            environmentVariables {
-                propertiesFile('env.properties')
+                environmentVariables {
+                    propertiesFile('env.properties')
+                }
+                buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
+                wrappers {
+                    buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
+                }
+
+                // set release version on poms (temp: add branchPath since using same git repo) and commit
+                maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
+                shell 'git commit -am "[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}"'
+
+                // test and deploy to nexus, then tag
+                maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
+                shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
+
+                // switch to original branch
+                shell "git checkout -"
+
+                // increment and update to new version
+                maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
+                shell 'git commit -am "[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}" # TODO && git push'
             }
-            buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
-            wrappers {
-                buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
-            }
 
-            // set release version on poms (temp: add basePath since using same git repo) and commit
-            maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
-            shell 'git commit -am "[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}"'
-
-            // test and deploy to nexus, then tag
-            maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
-            shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
-
-            // switch to original branch
-            shell "git checkout -"
-
-            // increment and update to new version
-            maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
-            shell 'git commit -am "[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}" # TODO && git push'
-        }
-
-        publishers {
-            downstreamParameterized {
-                trigger(integrationTests) {
-                    condition('SUCCESS')
-                    parameters {
-                        predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
-                        predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
+            publishers {
+                downstreamParameterized {
+                    trigger(integrationTests) {
+                        condition('SUCCESS')
+                        parameters {
+                            predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
+                            predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
+                        }
                     }
                 }
             }
         }
-    }
 
-    job(integrationTests) {
-        description("Job for running integration tests for $basePath")
+        job(integrationTests) {
+            description("Job for running integration tests for $branchPath")
 
-        scm {
-            github repo
-        }
+            scm {
+                github repo
+            }
 
-        wrappers {
-            // clean workspace
-            preBuildCleanup()
-        }
-
-        steps {
-            shell "echo 'Running integration tests.  Yay.'"
-            buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
             wrappers {
-                buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
+                // clean workspace
+                preBuildCleanup()
+            }
+
+            steps {
+                shell "echo 'Running integration tests.  Yay.'"
+                buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
+                wrappers {
+                    buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
+                }
             }
         }
-    }
 
-    job(promoteToRelease) {
-        description("Job for promoting successful $basePath releases from the staging artifact repository to the public releases artifact repository")
+        job(promoteToRelease) {
+            description("Job for promoting successful $branchPath releases from the staging artifact repository to the public releases artifact repository")
 
-        wrappers {
-            // clean workspace
-            preBuildCleanup()
-        }
+            wrappers {
+                // clean workspace
+                preBuildCleanup()
+            }
 
-        steps {
-            shell "echo 'releasing!'"
+            steps {
+                shell "echo 'releasing!'"
+            }
         }
     }
 }
