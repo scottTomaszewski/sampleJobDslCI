@@ -26,7 +26,7 @@ modules.each { Map module ->
         selectedJob("$basePath/build")
         alwaysAllowManualTrigger()
         showPipelineParameters()
-        refreshFrequency(60)
+        refreshFrequency(5)
     }
 
     // Job names
@@ -62,21 +62,7 @@ modules.each { Map module ->
         }
 
         steps {
-            copyArtifacts(build) {
-                includePatterns('*')
-                excludePatterns()
-                targetDirectory('')
-                flatten()
-                optional()
-                buildSelector {
-                    buildNumber("\$ARTIFACT_BUILD_NUMBER")
-                }
-            }
-
             def script = '''
-                # unzip the target directory
-                unzip target.zip
-
                 # prepare git
                 git config user.name "Jenkins"
                 git config user.email "DevOps_Team@FIXME.com"
