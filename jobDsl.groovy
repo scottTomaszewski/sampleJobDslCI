@@ -18,21 +18,21 @@ modules.each { Map module ->
         description "Jobs associated with the $module.name module"
     }
 
+    // Job names
+    def buildAndReleaseToStaging = "$basePath/release-to-staging"
+    def integrationTests = "$basePath/integration-tests"
+    def promoteToRelease = "$basePath/promote-to-release"
+
     buildPipelineView("$basePath/pipeline") {
         filterBuildQueue()
         filterExecutors()
         title("$basePath CI Pipeline")
         displayedBuilds(5)
-        selectedJob("$basePath/build")
+        selectedJob(buildAndReleaseToStaging)
         alwaysAllowManualTrigger()
         showPipelineParameters()
         refreshFrequency(5)
     }
-
-    // Job names
-    def buildAndReleaseToStaging = "$basePath/release-to-staging"
-    def integrationTests = "$basePath/integration-tests"
-    def promoteToRelease = "$basePath/promote-to-release"
 
     job(buildAndReleaseToStaging) {
         description("Job for testing $basePath then releasing successful builds to the staging artifact repository")
