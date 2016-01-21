@@ -35,17 +35,6 @@ modules.each { Map module ->
     def integrationTests = "$basePath/integration-tests"
     def build = "$basePath/build"
 
-    job(promoteToRelease) {
-        description("Job for promoting successful $basePath releases from the staging artifact repository to the public releases artifact repository")
-
-        parameters {
-            stringParam 'host'
-        }
-        steps {
-            shell "echo 'releasing!'"
-        }
-    }
-
     job(releaseToStaging) {
         description("Job for testing $basePath then releasing successful builds to the staging artifact repository")
 
@@ -145,6 +134,17 @@ modules.each { Map module ->
                     }
                 }
             }
+        }
+    }
+
+    job(promoteToRelease) {
+        description("Job for promoting successful $basePath releases from the staging artifact repository to the public releases artifact repository")
+
+        parameters {
+            stringParam 'host'
+        }
+        steps {
+            shell "echo 'releasing!'"
         }
     }
 
