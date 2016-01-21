@@ -42,6 +42,10 @@ modules.each { Map module ->
             github repo
         }
 
+        triggers {
+            scm 'H/2 * * * *'
+        }
+
         wrappers {
             configFiles {
                 mavenSettings('MySettings') {
