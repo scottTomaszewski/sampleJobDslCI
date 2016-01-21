@@ -60,6 +60,9 @@ modules.each { Map module ->
                 git config user.email "DevOps_Team@FIXME.com"
                 git config push.default simple
 
+                # figure out git commit count
+                GIT_COMMIT_COUNT=`git rev-list --all --count`
+
                 # evaluate cdm version from property
                 CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
 
@@ -71,7 +74,7 @@ modules.each { Map module ->
 
                 # release version as MAJOR.MINOR.BUILD_NUMBER.SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-                RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${BUILD_NUMBER}\\4#"`
+                RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
 
                 # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
                 NEXT_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
@@ -112,6 +115,18 @@ modules.each { Map module ->
             // increment and update to new version
             maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
             shell "git commit -am '[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}' # TODO && git push"
+        }
+
+        publishers {
+            downstreamParameterized {
+                trigger(buildAndReleaseToStaging) {
+                    condition('SUCCESS')
+                    parameters {
+                        predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
+                        predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}-$basePath")
+                    }
+                }
+            }
         }
     }
 
