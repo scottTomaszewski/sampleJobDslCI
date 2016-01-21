@@ -147,49 +147,4 @@ modules.each { Map module ->
             shell "echo 'releasing!'"
         }
     }
-
-    job(build) {
-        description("Job for running basic unit tests for $basePath.  Is triggered by polling git scm.")
-
-        scm {
-            github repo
-        }
-        triggers {
-            scm 'H/2 * * * *'
-        }
-        steps {
-            maven('clean install')
-            def script = '''
-                CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
-                PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
-                echo "CDM=$CDM_VAR PROJECT_VERSION=$PROJECT_VERSION_VAR"
-                # TODO: remove this
-                mkdir -p target
-                touch target/foo.txt
-
-                # archive target dir
-                rm -f target.zip && zip -r target.zip target
-            '''
-            shell script
-            buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
-            wrappers {
-                buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
-            }
-        }
-
-        publishers {
-            archiveArtifacts {
-                pattern('target.zip')
-                onlyIfSuccessful()
-            }
-            downstreamParameterized {
-                trigger(integrationTests) {
-                    condition('SUCCESS')
-                    parameters {
-                        predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
-                    }
-                }
-            }
-        }
-    }
 }
