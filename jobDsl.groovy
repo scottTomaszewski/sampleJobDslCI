@@ -77,7 +77,7 @@ modules.each { Map module ->
                 RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
 
                 # next version as MAJOR.MINOR.[BUILD_NUMBER+1].SUFFIX
-                NEXT_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.$((BUILD_NUMBER+1))\\4#"`
+                NEXT_VER_VAR=`echo $PROJECT_VERSION_VAR | sed -e "s#$SEMVER#\\1.\\2.$((GIT_COMMIT_COUNT+1))\\4#"`
 
                 # create a branch for safekeeping
                 git checkout -b staging-v$RELEASE_VER_VAR
