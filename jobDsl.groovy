@@ -46,6 +46,7 @@ modules.each { Map module ->
         }
 
         wrappers {
+            preBuildCleanup()
             configFiles {
                 mavenSettings('MySettings') {
                     variable('SETTINGS_CONFIG')
@@ -146,6 +147,11 @@ modules.each { Map module ->
         scm {
             github repo
         }
+
+        wrappers {
+            preBuildCleanup()
+        }
+
         steps {
             shell "echo 'Running integration tests.  Yay.'"
             buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
@@ -158,9 +164,10 @@ modules.each { Map module ->
     job(promoteToRelease) {
         description("Job for promoting successful $basePath releases from the staging artifact repository to the public releases artifact repository")
 
-        parameters {
-            stringParam 'host'
+        wrappers {
+            preBuildCleanup()
         }
+
         steps {
             shell "echo 'releasing!'"
         }
