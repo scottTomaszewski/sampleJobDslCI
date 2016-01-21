@@ -14,7 +14,7 @@ modules.each { Map module ->
     def modulePath = module.name
     def repo = "scottTomaszewski/$module.repo"
 
-    folder(branchPath) {
+    folder(modulePath) {
         description "Jobs associated with the $module.name module"
     }
 
