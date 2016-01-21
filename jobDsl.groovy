@@ -143,16 +143,6 @@ modules.each { Map module ->
                 buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
             }
         }
-        publishers {
-            downstreamParameterized {
-                trigger(buildAndReleaseToStaging) {
-                    condition('SUCCESS')
-                    parameters {
-                        predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
-                    }
-                }
-            }
-        }
     }
 
     job(promoteToRelease) {
