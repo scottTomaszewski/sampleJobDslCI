@@ -122,6 +122,9 @@ modules.each { Map module ->
             // increment and update to new version
             maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
             shell "git commit -am '[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}' # TODO && git push"
+
+            // remove the staging branch
+            shell "git branch --delete staging-\${RELEASE_VERSION}"
         }
 
         publishers {
