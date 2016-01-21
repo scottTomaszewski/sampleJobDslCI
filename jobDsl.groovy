@@ -19,7 +19,7 @@ modules.each { Map module ->
     }
 
     module.branches.each { branch ->
-        def branchPath = "$modulePath-$branch"
+        def branchPath = "$modulePath/$branch"
 
         folder(branchPath) {
             description "Jobs associated with the $module.name module on the $branch branch"
