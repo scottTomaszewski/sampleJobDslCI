@@ -107,7 +107,7 @@ modules.each { Map module ->
 
             // set release version on poms (temp: add basePath since using same git repo) and commit
             maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
-            shell "git commit -am '[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}'"
+            shell 'git commit -am "[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}"'
 
             // test and deploy to nexus, then tag
             maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
