@@ -160,6 +160,23 @@ modules.each { Map module ->
                     buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
                 }
             }
+            promotions {
+                promotion("Promote to Release") {
+                    icon("star-gold")
+                    conditions {
+                        manual('')
+                    }
+                    actions {
+                        downstreamParameterized {
+                            trigger(promoteToRelease) {
+                                condition('SUCCESS')
+                                predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
+                                predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         job(promoteToRelease) {
@@ -171,7 +188,16 @@ modules.each { Map module ->
             }
 
             steps {
-                shell "echo 'releasing!'"
+                artifactPromotion {
+                    groupId("\${ARTIFACT_GROUP_ID}")
+                    artifactId("\${ARTIFACT_ARTIFACT_ID}")
+                    classifier("\${ARTIFACT_CLASSIFIER}")
+                    version("\${ARTIFACT_VERSION}")
+                    extension("\${ARTIFACT_EXTENSION}")
+                    stagingRepository("http://192.168.99.100:32770/content/repositories/staging/", "deployment", "deployment123", true)
+                    releaseRepository("http://192.168.99.100:32770/content/repositories/releases/", "deployment", "deployment123")
+                    debug(true)
+                }
             }
         }
     }
