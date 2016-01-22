@@ -49,7 +49,7 @@ modules.each { Map module ->
             }
 
             triggers {
-                scm 'H/2 * * * *'
+                scm '* * * * *'
             }
 
             wrappers {
