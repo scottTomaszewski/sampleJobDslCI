@@ -81,8 +81,6 @@ modules.each { Map module ->
                 PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
                 PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
                 PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
-                PROJECT_CLASSIFIER_VAR=`mvn help:evaluate -Dexpression=project.classifier|grep -Ev '(^\\[|Download\\w+:)'`
-                PROJECT_EXTENSION_VAR=`mvn help:evaluate -Dexpression=project.type|grep -Ev '(^\\[|Download\\w+:)'`
 
                 # remove "-SNAPSHOT" from project version
                 WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
@@ -102,8 +100,6 @@ modules.each { Map module ->
                 echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
                 echo "PROJECT_GROUP_ID=$PROJECT_GROUP_ID_VAR" >> env.properties
                 echo "PROJECT_ARTIFACT_ID=$PROJECT_ARTIFACT_ID_VAR" >> env.properties
-                echo "PROJECT_CLASSIFIER=$PROJECT_CLASSIFIER_VAR" >> env.properties
-                echo "PROJECT_EXTENSION=$PROJECT_EXTENSION_VAR" >> env.properties
                 echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
                 echo "NEXT_VERSION=$NEXT_VER_VAR" >> env.properties
 
@@ -145,8 +141,6 @@ modules.each { Map module ->
                             predefinedProp("ARTIFACT_VERSION", "\${RELEASE_VERSION}")
                             predefinedProp("ARTIFACT_GROUP_ID", "\${PROJECT_GROUP_ID}")
                             predefinedProp("ARTIFACT_ARTIFACT_ID", "\${PROJECT_ARTIFACT_ID}")
-                            predefinedProp("ARTIFACT_CLASSIFIER", "\${PROJECT_CLASSIFIER}")
-                            predefinedProp("ARTIFACT_EXTENSION", "\${PROJECT_EXTENSION}")
                         }
                     }
                 }
@@ -179,9 +173,7 @@ modules.each { Map module ->
                         predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
                         predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
                         predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
-                        predefinedProp("ARTIFACT_CLASSIFIER", "\${ARTIFACT_CLASSIFIER}")
                         predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
-                        predefinedProp("ARTIFACT_EXTENSION", "\${ARTIFACT_EXTENSION}")
                     }
                 }
             }
@@ -199,9 +191,8 @@ modules.each { Map module ->
                 artifactPromotion {
                     groupId("\${ARTIFACT_GROUP_ID}")
                     artifactId("\${ARTIFACT_ARTIFACT_ID}")
-                    classifier("\${ARTIFACT_CLASSIFIER}")
                     version("\${ARTIFACT_VERSION}")
-                    extension("\${ARTIFACT_EXTENSION}")
+                    extension("pom")
                     stagingRepository("http://192.168.99.100:32770/content/repositories/staging/", "deployment", "deployment123", true)
                     releaseRepository("http://192.168.99.100:32770/content/repositories/releases/", "deployment", "deployment123")
                     debug(true)
