@@ -185,18 +185,25 @@ modules.each { Map module ->
             wrappers {
                 // clean workspace
                 preBuildCleanup()
+
+                // Add maven settings.xml from Managed Config Files
+                configFiles {
+                    mavenSettings('MySettings') {
+                        variable('SETTINGS_CONFIG')
+                    }
+                }
             }
 
             steps {
-                artifactPromotion {
-                    groupId("\${ARTIFACT_GROUP_ID}")
-                    artifactId("\${ARTIFACT_ARTIFACT_ID}")
-                    version("\${ARTIFACT_VERSION}")
-                    extension("pom")
-                    stagingRepository("http://192.168.99.100:32770/content/repositories/staging/", "deployment", "deployment123", true)
-                    releaseRepository("http://192.168.99.100:32770/content/repositories/releases/", "deployment", "deployment123")
-                    debug(true)
-                }
+                def script = """
+                    mvn maven-dependency-plugin:get \
+                        -DaltDeploymentRepository=http://192.168.99.100:32770/content/repositories/staging \
+                        -DrepoUrl=http://192.168.99.100:32770/content/groups/public \
+                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
+                        -s ${SETTINGS_CONFIG}
+                    ls
+                """
+                shell script
             }
         }
     }
