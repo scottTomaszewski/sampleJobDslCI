@@ -45,7 +45,7 @@ modules.each { Map module ->
             description("Job for testing $branchPath then releasing successful builds to the staging artifact repository")
 
             scm {
-                github repo
+                github(repo, branch)
             }
 
             triggers {
@@ -145,7 +145,7 @@ modules.each { Map module ->
             description("Job for running integration tests for $branchPath")
 
             scm {
-                github repo
+                github(repo, branch)
             }
 
             wrappers {
