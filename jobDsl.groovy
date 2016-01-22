@@ -82,7 +82,7 @@ modules.each { Map module ->
                 PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
                 PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
                 PROJECT_CLASSIFIER_VAR=`mvn help:evaluate -Dexpression=project.classifier|grep -Ev '(^\\[|Download\\w+:)'`
-                PROJECT_EXTENSION_VAR=`mvn help:evaluate -Dexpression=project.extension|grep -Ev '(^\\[|Download\\w+:)'`
+                PROJECT_EXTENSION_VAR=`mvn help:evaluate -Dexpression=project.type|grep -Ev '(^\\[|Download\\w+:)'`
 
                 # remove "-SNAPSHOT" from project version
                 WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
