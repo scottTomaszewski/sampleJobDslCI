@@ -200,7 +200,7 @@ modules.each { Map module ->
                         -DaltDeploymentRepository=http://192.168.99.100:32770/content/repositories/staging \
                         -DrepoUrl=http://192.168.99.100:32770/content/groups/public \
                         -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
-                        -s ${SETTINGS_CONFIG}
+                        -s \${SETTINGS_CONFIG}
                     ls
                 """
                 shell script
