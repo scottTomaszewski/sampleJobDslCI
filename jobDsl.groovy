@@ -197,7 +197,7 @@ modules.each { Map module ->
             steps {
                 def script = """
                     mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
-                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom
+                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
                         -DoutputDirectory=. \
                         -Dmdep.stripVersion=true \
                         -s \${SETTINGS_CONFIG}
