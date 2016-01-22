@@ -101,7 +101,7 @@ modules.each { Map module ->
 
                 # print out description for Description Setter jenkins plugin
                 echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
-            '''
+                '''
                 shell script
 
                 environmentVariables {
