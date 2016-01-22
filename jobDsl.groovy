@@ -26,7 +26,7 @@ modules.each { Map module ->
         }
 
         // Job names
-        def buildAndReleaseToStaging = "$branchPath/release-to-staging"
+        def buildAndReleaseToStaging = "$branchPath/build-to-staging"
         def integrationTests = "$branchPath/integration-tests"
         def promoteToRelease = "$branchPath/promote-to-release"
 
@@ -196,7 +196,7 @@ modules.each { Map module ->
 
             steps {
                 def script = """
-                    mvn maven-dependency-plugin:get \
+                    mvn org.apache.maven.plugins:maven-dependency-plugin:get \
                         -DaltDeploymentRepository=http://192.168.99.100:32770/content/repositories/staging \
                         -DrepoUrl=http://192.168.99.100:32770/content/groups/public \
                         -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
