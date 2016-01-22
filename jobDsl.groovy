@@ -173,16 +173,18 @@ modules.each { Map module ->
                     buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
                 }
             }
-            downstreamParameterized {
-                trigger(promoteToRelease) {
-                    condition('SUCCESS')
-                    predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
-                    predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
-                    predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
-                    predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
-                    predefinedProp("ARTIFACT_CLASSIFIER", "\${ARTIFACT_CLASSIFIER}")
-                    predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
-                    predefinedProp("ARTIFACT_EXTENSION", "\${ARTIFACT_EXTENSION}")
+            publishers {
+                downstreamParameterized {
+                    trigger(promoteToRelease) {
+                        condition('SUCCESS')
+                        predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
+                        predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
+                        predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
+                        predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
+                        predefinedProp("ARTIFACT_CLASSIFIER", "\${ARTIFACT_CLASSIFIER}")
+                        predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
+                        predefinedProp("ARTIFACT_EXTENSION", "\${ARTIFACT_EXTENSION}")
+                    }
                 }
             }
         }
