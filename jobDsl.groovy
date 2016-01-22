@@ -142,11 +142,10 @@ modules.each { Map module ->
                         condition('SUCCESS')
                         parameters {
                             predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
-                            predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
+                            predefinedProp("ARTIFACT_VERSION", "\${RELEASE_VERSION}")
                             predefinedProp("ARTIFACT_GROUP_ID", "\${PROJECT_GROUP_ID}")
                             predefinedProp("ARTIFACT_ARTIFACT_ID", "\${PROJECT_ARTIFACT_ID}")
                             predefinedProp("ARTIFACT_CLASSIFIER", "\${PROJECT_CLASSIFIER}")
-                            predefinedProp("ARTIFACT_VERSION", "\${PROJECT_VERSION}")
                             predefinedProp("ARTIFACT_EXTENSION", "\${PROJECT_EXTENSION}")
                         }
                     }
@@ -178,7 +177,6 @@ modules.each { Map module ->
                     trigger(promoteToRelease) {
                         condition('SUCCESS')
                         predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
-                        predefinedProp("RELEASE_VERSION", "\${RELEASE_VERSION}")
                         predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
                         predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
                         predefinedProp("ARTIFACT_CLASSIFIER", "\${ARTIFACT_CLASSIFIER}")
