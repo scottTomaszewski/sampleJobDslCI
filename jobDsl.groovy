@@ -1,7 +1,7 @@
 def modules = [
-        [name: 'ds', repo: 'ba', branches: ['master']],
-        //[name: 'ms', repo: 'ba', branches: ['master']],
-        //[name: 'ba', repo: 'ba', branches: ['master']],
+        [name: 'ds', repo: 'dis', branches: ['master']],
+        [name: 'ms', repo: 'ba', branches: ['master']],
+        [name: 'ba', repo: 'ba', branches: ['master']],
         //[name: 'if', repo: 'ba', branches: ['master']],
         //[name: 'cs', repo: 'ba', branches: ['master']],
         //[name: 'is', repo: 'ba', branches: ['master']],
