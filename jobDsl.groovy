@@ -196,10 +196,10 @@ modules.each { Map module ->
 
             steps {
                 def script = """
-                    mvn org.apache.maven.plugins:maven-dependency-plugin:get \
-                        -DaltDeploymentRepository=http://192.168.99.100:32770/content/repositories/staging \
-                        -DrepoUrl=http://192.168.99.100:32770/content/groups/public \
-                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
+                    mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom
+                        -DoutputDirectory=. \
+                        -Dmdep.stripVersion=true \
                         -s \${SETTINGS_CONFIG}
                     ls
                 """
