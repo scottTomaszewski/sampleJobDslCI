@@ -196,12 +196,26 @@ modules.each { Map module ->
 
             steps {
                 def script = """
+                    # pull down artifact
                     mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
                         -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
                         -DoutputDirectory=. \
-                        -Dmdep.stripVersion=true \
                         -s \${SETTINGS_CONFIG}
-                    ls
+
+                    # push up artifact to release repo
+                    mvn deploy:deploy-file -Durl=http://192.168.99.100:32770/content/repositories/releases/ \
+                       -DrepositoryId=nexus \\
+                       -Dfile=test.pom \\
+                       -DgroupId=\${ARTIFACT_GROUP_ID} \\
+                       -DartifactId=\${ARTIFACT_ARTIFACT_ID} \\
+                       -Dversion=\${ARTIFACT_VERSION} \\
+                       #[-DpomFile=your-pom.xml] \\
+                       #[-Dpackaging=jar] \\
+                       #[-Dclassifier=test] \\
+                       #[-DgeneratePom=true] \\
+                       #[-DgeneratePom.description="My Project Description"] \\
+                       #[-DrepositoryLayout=legacy] \\
+                       #[-DuniqueVersion=false]
                 """
                 shell script
             }
