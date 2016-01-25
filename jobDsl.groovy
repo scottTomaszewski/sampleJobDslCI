@@ -204,18 +204,11 @@ modules.each { Map module ->
 
                     # push up artifact to release repo
                     mvn deploy:deploy-file -Durl=http://192.168.99.100:32770/content/repositories/releases/ \
-                       -DrepositoryId=nexus \\
-                       -Dfile=test-\${ARTIFACT_VERSION}.pom \\
-                       -DgroupId=\${ARTIFACT_GROUP_ID} \\
-                       -DartifactId=\${ARTIFACT_ARTIFACT_ID} \\
-                       -Dversion=\${ARTIFACT_VERSION} \\
-                       #[-DpomFile=your-pom.xml] \\
-                       #[-Dpackaging=jar] \\
-                       #[-Dclassifier=test] \\
-                       #[-DgeneratePom=true] \\
-                       #[-DgeneratePom.description="My Project Description"] \\
-                       #[-DrepositoryLayout=legacy] \\
-                       #[-DuniqueVersion=false]
+                       -DrepositoryId=nexus \
+                       -Dfile=test-\${ARTIFACT_VERSION}.pom \
+                       -DgroupId=\${ARTIFACT_GROUP_ID} \
+                       -DartifactId=\${ARTIFACT_ARTIFACT_ID} \
+                       -Dversion=\${ARTIFACT_VERSION} \
                        -s \${SETTINGS_CONFIG}
                 """
                 shell script
