@@ -205,7 +205,7 @@ modules.each { Map module ->
                     # push up artifact to release repo
                     mvn deploy:deploy-file -Durl=http://192.168.99.100:32770/content/repositories/releases/ \
                        -DrepositoryId=nexus \\
-                       -Dfile=test.pom \\
+                       -Dfile=test-\${ARTIFACT_VERSION}.pom \\
                        -DgroupId=\${ARTIFACT_GROUP_ID} \\
                        -DartifactId=\${ARTIFACT_ARTIFACT_ID} \\
                        -Dversion=\${ARTIFACT_VERSION} \\
