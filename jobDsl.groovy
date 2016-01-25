@@ -216,6 +216,7 @@ modules.each { Map module ->
                        #[-DgeneratePom.description="My Project Description"] \\
                        #[-DrepositoryLayout=legacy] \\
                        #[-DuniqueVersion=false]
+                       -s \${SETTINGS_CONFIG}
                 """
                 shell script
             }
