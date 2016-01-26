@@ -252,8 +252,10 @@ job(buildModulesBom) {
             -Dversion.ms=0.0.10
         """)
 
+        def bomDir = "target/classes/"
+
         def script = '''
-                cd target/classes
+                cd ${bomDir}
 
                 # prepare git
                 git config user.name "Jenkins"
@@ -298,7 +300,7 @@ job(buildModulesBom) {
         shell script
 
         environmentVariables {
-            propertiesFile('target/classes/env.properties')
+            propertiesFile("${bomDir}env.properties")
         }
         buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
         wrappers {
@@ -306,7 +308,7 @@ job(buildModulesBom) {
         }
 
         // set release version on poms (temp: add branchPath since using same git repo) and commit
-        maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
+        maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'", "${bomDir}")
         shell 'git commit -am "[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}"'
 
         // test and deploy to nexus, then tag
@@ -316,7 +318,7 @@ job(buildModulesBom) {
         maven('''deploy:deploy-file
             -Durl=${nexusUrl}/content/repositories/staging/
             -DrepositoryId=nexus
-            -Dfile=target/classes/pom.xml
+            -Dfile=${bomDir}pom.xml
             -s \${SETTINGS_CONFIG}
         ''')
 
@@ -326,7 +328,8 @@ job(buildModulesBom) {
         shell "git checkout -"
 
         // increment and update to new version
-        maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
-        shell 'git commit -am "[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}" # TODO && git push'
+        // TODO: these will fail because unfiltered version vars
+        //maven("versions:set -DnewVersion=\'\${NEXT_VERSION}\'")
+        //shell 'git commit -am "[promote-to-staging] Bumping after staging \${RELEASE_VERSION}. New version: \${NEXT_VERSION}" # TODO && git push'
     }
 }
