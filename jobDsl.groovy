@@ -246,6 +246,10 @@ job(buildModulesBom) {
     }
 
     steps {
-        maven("package ")
+        maven("""package
+            -Dversion.ds=0.0.37
+            -Dversion.ba=0.0.16
+            -Dversion.ms=0.0.10
+        """)
     }
 }
