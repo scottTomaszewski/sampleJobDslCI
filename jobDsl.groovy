@@ -11,6 +11,7 @@ def modules = [
 ]
 
 def nexusUrl = "http://192.168.99.100:32770"
+def buildModulesBom = "buildModulesBom"
 
 modules.each { Map module ->
     def modulePath = module.name
@@ -213,12 +214,38 @@ modules.each { Map module ->
                     # push up artifact to release repo
                     mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
                        -DrepositoryId=nexus \
-                       -Dfile=test-\${ARTIFACT_VERSION}.jar \
-                       -DpomFile=test-\${ARTIFACT_VERSION}.pom \
+                       -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.jar \
+                       -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
                        -s \${SETTINGS_CONFIG}
                 """
                 shell script
             }
         }
+    }
+}
+
+
+// Build bom with aggregate of all modules
+job(buildModulesBom) {
+    description("Job for build a bom that aggregates all the latest successful releases for modules")
+
+    scm {
+        github("scottTomaszewski/bom")
+    }
+
+    wrappers {
+        // clean workspace
+        preBuildCleanup()
+
+        // Add maven settings.xml from Managed Config Files
+        configFiles {
+            mavenSettings('MySettings') {
+                variable('SETTINGS_CONFIG')
+            }
+        }
+    }
+
+    step {
+        maven("package ")
     }
 }
