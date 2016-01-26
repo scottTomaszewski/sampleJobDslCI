@@ -214,7 +214,7 @@ modules.each { Map module ->
                     mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
                        -DrepositoryId=nexus \
                        -Dfile=test-\${ARTIFACT_VERSION}.jar \
-                       -DpomFile=test-\${ARTIFACT_VERSION}.pom] \
+                       -DpomFile=test-\${ARTIFACT_VERSION}.pom \
                        -s \${SETTINGS_CONFIG}
                 """
                 shell script
