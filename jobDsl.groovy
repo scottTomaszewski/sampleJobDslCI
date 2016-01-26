@@ -254,7 +254,7 @@ job(buildModulesBom) {
 
         def bomDir = "target/classes/"
 
-        def script = '''
+        def script = """
                 # prepare git
                 git config user.name "Jenkins"
                 git config user.email "DevOps_Team@FIXME.com"
@@ -274,29 +274,29 @@ job(buildModulesBom) {
                 #PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
 
                 # remove "-TEMPLATE" from project version
-                WITHOUT_TEMPLATE=${PROJECT_VERSION_VAR%-TEMPLATE}
+                WITHOUT_TEMPLATE=\${PROJECT_VERSION_VAR%-TEMPLATE}
 
                 # release version as MAJOR.MINOR.GIT_COMMIT_COUNT.SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-                RELEASE_VER_VAR=`echo $WITHOUT_TEMPLATE | sed -e "s#$SEMVER#\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
+                RELEASE_VER_VAR=`echo \$WITHOUT_TEMPLATE | sed -e "s#\$SEMVER#\\1.\\2.\${GIT_COMMIT_COUNT}\\4#"`
 
                 # next version as MAJOR.MINOR.[GIT_COMMIT_COUNT+1].SUFFIX
-                NEXT_VER_VAR=`echo $PROJECT_VERSION_VAR | sed -e "s#$SEMVER#\\1.\\2.$((GIT_COMMIT_COUNT+1))\\4#"`
+                NEXT_VER_VAR=`echo \$PROJECT_VERSION_VAR | sed -e "s#\$SEMVER#\\1.\\2.\$((GIT_COMMIT_COUNT+1))\\4#"`
 
                 # create a branch for safekeeping
-                git checkout -b staging-v$RELEASE_VER_VAR
+                git checkout -b staging-v\$RELEASE_VER_VAR
 
                 # Add properties for EnvInject jenkins plugin
-                echo "CDM=$CDM_VAR" >> env.properties
-                echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
-                #echo "PROJECT_GROUP_ID=$PROJECT_GROUP_ID_VAR" >> env.properties
-                #echo "PROJECT_ARTIFACT_ID=$PROJECT_ARTIFACT_ID_VAR" >> env.properties
-                echo "RELEASE_VERSION=$RELEASE_VER_VAR" >> env.properties
-                echo "NEXT_VERSION=$NEXT_VER_VAR" >> env.properties
+                echo "CDM=\$CDM_VAR" >> env.properties
+                echo "PROJECT_VERSION=\$PROJECT_VERSION_VAR" >> env.properties
+                #echo "PROJECT_GROUP_ID=\$PROJECT_GROUP_ID_VAR" >> env.properties
+                #echo "PROJECT_ARTIFACT_ID=\$PROJECT_ARTIFACT_ID_VAR" >> env.properties
+                echo "RELEASE_VERSION=\$RELEASE_VER_VAR" >> env.properties
+                echo "NEXT_VERSION=\$NEXT_VER_VAR" >> env.properties
 
                 # print out description for Description Setter jenkins plugin
-                echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
-        '''
+                echo "DESCRIPTION v\$RELEASE_VER_VAR (CDM=\$CDM_VAR)"
+        """
         shell script
 
         environmentVariables {
