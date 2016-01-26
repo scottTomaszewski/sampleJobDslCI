@@ -319,9 +319,9 @@ job(buildModulesBom) {
         maven("""deploy:deploy-file
             -Durl=${nexusUrl}/content/repositories/staging/
             -DrepositoryId=nexus
-            -Dfile=${bomDir}pom.xml
+            -Dfile=pom.xml
             -s \${SETTINGS_CONFIG}
-        """)
+        """, ${bomDir})
 
         //shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
 
