@@ -10,6 +10,8 @@ def modules = [
         //[name: 'io', repo: 'ba', branches: ['master']],
 ]
 
+def nexusUrl = "http://192.168.99.100:32770"
+
 modules.each { Map module ->
     def modulePath = module.name
     def repo = "scottTomaszewski/$module.repo"
@@ -209,7 +211,7 @@ modules.each { Map module ->
                         -s \${SETTINGS_CONFIG}
 
                     # push up artifact to release repo
-                    mvn deploy:deploy-file -Durl=http://192.168.99.100:32770/content/repositories/releases/ \
+                    mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
                        -DrepositoryId=nexus \
                        -Dfile=test-\${ARTIFACT_VERSION}.jar \
                        -DpomFile=test-\${ARTIFACT_VERSION}.pom] \
