@@ -245,7 +245,7 @@ job(buildModulesBom) {
         }
     }
 
-    step {
+    steps {
         maven("package ")
     }
 }
