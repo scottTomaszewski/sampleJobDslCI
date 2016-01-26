@@ -316,12 +316,12 @@ job(buildModulesBom) {
         //maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
 
         // push up artifact to release repo
-        maven('''deploy:deploy-file
+        maven("""deploy:deploy-file
             -Durl=${nexusUrl}/content/repositories/staging/
             -DrepositoryId=nexus
             -Dfile=${bomDir}pom.xml
             -s \${SETTINGS_CONFIG}
-        ''')
+        """)
 
         //shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
 
