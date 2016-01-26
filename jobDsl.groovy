@@ -320,6 +320,7 @@ job(buildModulesBom) {
             -Durl=${nexusUrl}/content/repositories/staging/
             -DrepositoryId=nexus
             -Dfile=pom.xml
+            -DpomFile=pom.xml
             -s \${SETTINGS_CONFIG}
         """, "${bomDir}")
 
