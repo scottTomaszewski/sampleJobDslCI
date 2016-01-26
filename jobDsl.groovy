@@ -202,6 +202,12 @@ modules.each { Map module ->
                         -DoutputDirectory=. \
                         -s \${SETTINGS_CONFIG}
 
+                    # pull down artifact pom
+                    mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
+                        -DoutputDirectory=. \
+                        -s \${SETTINGS_CONFIG}
+
                     # push up artifact to release repo
                     mvn deploy:deploy-file -Durl=http://192.168.99.100:32770/content/repositories/releases/ \
                        -DrepositoryId=nexus \
