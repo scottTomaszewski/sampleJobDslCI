@@ -255,12 +255,12 @@ job(buildModulesBom) {
         def bomDir = "target/classes/"
 
         def script = '''
-                cd ${bomDir}
-
                 # prepare git
                 git config user.name "Jenkins"
                 git config user.email "DevOps_Team@FIXME.com"
                 git config push.default simple
+
+                cd ${bomDir}
 
                 # figure out git commit count
                 GIT_COMMIT_COUNT=`git rev-list --all --count`
