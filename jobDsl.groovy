@@ -298,7 +298,7 @@ job(buildModulesBom) {
         shell script
 
         environmentVariables {
-            propertiesFile('env.properties')
+            propertiesFile('target/classes/env.properties')
         }
         buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
         wrappers {
@@ -311,12 +311,6 @@ job(buildModulesBom) {
 
         // test and deploy to nexus, then tag
         //maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
-        maven("""resources:resources
-            -PbuildBom
-            -Dversion.ds=0.0.37
-            -Dversion.ba=0.0.16
-            -Dversion.ms=0.0.10
-        """)
 
         // push up artifact to release repo
         maven('''deploy:deploy-file
