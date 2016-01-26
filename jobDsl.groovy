@@ -245,7 +245,16 @@ job(buildModulesBom) {
     }
 
     steps {
+        maven("""resources:resources
+            -PbuildBom
+            -Dversion.ds=0.0.37
+            -Dversion.ba=0.0.16
+            -Dversion.ms=0.0.10
+        """)
+
         def script = '''
+                cd target/classes
+
                 # prepare git
                 git config user.name "Jenkins"
                 git config user.email "DevOps_Team@FIXME.com"
