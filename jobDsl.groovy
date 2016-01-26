@@ -321,7 +321,7 @@ job(buildModulesBom) {
             -DrepositoryId=nexus
             -Dfile=pom.xml
             -s \${SETTINGS_CONFIG}
-        """, ${bomDir})
+        """, "${bomDir}")
 
         //shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
 
