@@ -262,12 +262,12 @@ job(buildModulesBom) {
                 #PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
                 #PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
 
-                # remove "-SNAPSHOT" from project version
-                WITHOUT_SNAPSHOT=${PROJECT_VERSION_VAR%-SNAPSHOT}
+                # remove "-TEMPLATE" from project version
+                WITHOUT_TEMPLATE=${PROJECT_VERSION_VAR%-TEMPLATE}
 
                 # release version as MAJOR.MINOR.GIT_COMMIT_COUNT.SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-                RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
+                RELEASE_VER_VAR=`echo $WITHOUT_TEMPLATE | sed -e "s#$SEMVER#\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
 
                 # next version as MAJOR.MINOR.[GIT_COMMIT_COUNT+1].SUFFIX
                 NEXT_VER_VAR=`echo $PROJECT_VERSION_VAR | sed -e "s#$SEMVER#\\1.\\2.$((GIT_COMMIT_COUNT+1))\\4#"`
