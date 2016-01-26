@@ -309,7 +309,8 @@ job(buildModulesBom) {
 
         // set release version on poms (temp: add branchPath since using same git repo) and commit
         maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'", "${bomDir}")
-        shell 'git commit -am "[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}"'
+        // TODO: version set in target dir, nothing to commit
+        //shell 'git commit -am "[promote-to-staging] Bumping version to staging -> \${RELEASE_VERSION}"'
 
         // test and deploy to nexus, then tag
         //maven('clean install deploy -s ${SETTINGS_CONFIG} -DdeployAtEnd')
@@ -322,10 +323,10 @@ job(buildModulesBom) {
             -s \${SETTINGS_CONFIG}
         ''')
 
-        shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
+        //shell "git tag staging-\${RELEASE_VERSION} # TODO && git push --tags"
 
         // switch to original branch
-        shell "git checkout -"
+        //shell "git checkout -"
 
         // increment and update to new version
         // TODO: these will fail because unfiltered version vars
