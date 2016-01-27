@@ -236,6 +236,9 @@ modules.each { Map module ->
 }
 
 masterBranches.each { masterBranch ->
+    // TODO: need to figure this out programatically somehow
+    def platformVersion = "8"
+
     // Build bom with aggregate of all modules
     job("${buildModulesBom}-${masterBranch}") {
         description("Job for build a bom that aggregates all the latest successful releases for modules on ${masterBranch}")
@@ -257,68 +260,18 @@ masterBranches.each { masterBranch ->
         }
 
         steps {
-            // TODO: fix hard-coded "8"
-            maven("-PbuildBom -Dversion.platform=8")
-            maven("""versions:use-latest-releases
-                -DallowMajorUpdates=false
-                -U
-                -s \${SETTINGS_CONFIG}
-            """)
+            maven("-PbuildBom -Dversion.platform=${platformVersion}")
+            maven("versions:use-latest-releases -DallowMajorUpdates=false -U -s \${SETTINGS_CONFIG}")
 
+            def RELEASE_VERSION = "${platformVersion}.\${BUILD_NUMBER}"
 
-            def script = """
-                # prepare git
-                git config user.name "Jenkins"
-                git config user.email "DevOps_Team@FIXME.com"
-                git config push.default simple
-
-                # figure out git commit count
-                GIT_COMMIT_COUNT=`git rev-list --all --count`
-
-                # evaluate cdm version from property
-                CDM_VAR="TODO"
-
-                # evaluate declared project info
-                PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
-                #PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
-                #PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
-
-                # remove "-TEMPLATE" from project version
-                WITHOUT_TEMPLATE=\${PROJECT_VERSION_VAR%-TEMPLATE}
-
-                # release version as MAJOR.MINOR.GIT_COMMIT_COUNT.SUFFIX
-                SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-                RELEASE_VER_VAR=`echo \$WITHOUT_TEMPLATE | sed -e "s#\$SEMVER#\\1.\\2.\${GIT_COMMIT_COUNT}\\4#"`
-
-                # next version as MAJOR.MINOR.[GIT_COMMIT_COUNT+1].SUFFIX
-                NEXT_VER_VAR=`echo \$PROJECT_VERSION_VAR | sed -e "s#\$SEMVER#\\1.\\2.\$((GIT_COMMIT_COUNT+1))\\4#"`
-
-                # create a branch for safekeeping
-                git checkout -b staging-v\$RELEASE_VER_VAR
-
-                # Add properties for EnvInject jenkins plugin
-                echo "CDM=\$CDM_VAR" >> env.properties
-                echo "PROJECT_VERSION=\$PROJECT_VERSION_VAR" >> env.properties
-                #echo "PROJECT_GROUP_ID=\$PROJECT_GROUP_ID_VAR" >> env.properties
-                #echo "PROJECT_ARTIFACT_ID=\$PROJECT_ARTIFACT_ID_VAR" >> env.properties
-                echo "RELEASE_VERSION=\$RELEASE_VER_VAR" >> env.properties
-                echo "NEXT_VERSION=\$NEXT_VER_VAR" >> env.properties
-
-                # print out description for Description Setter jenkins plugin
-                echo "DESCRIPTION v\$RELEASE_VER_VAR (CDM=\$CDM_VAR)"
-            """
-            shell script
-
-            environmentVariables {
-                propertiesFile("env.properties")
-            }
-            buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
+            buildDescription("", "$RELEASE_VERSION")
             wrappers {
                 buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
             }
 
             // set release version on poms (temp: add branchPath since using same git repo) and commit
-            maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
+            maven("versions:set -DnewVersion=\'${RELEASE_VERSION}\'")
 
             // push up artifact to release repo
             maven("""deploy:deploy-file
