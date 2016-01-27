@@ -98,7 +98,7 @@ modules.each { Map module ->
                 # remove "-SNAPSHOT" from project version
                 WITHOUT_SNAPSHOT=\${PROJECT_VERSION_VAR%-SNAPSHOT}
 
-                # release version as MAJOR.MINOR.GIT_COMMIT_COUNT.SUFFIX
+                # release version as CSP.MAJOR.MINOR.[GIT_COMMIT_COUNT]SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
                 RELEASE_VER_VAR=`echo \$WITHOUT_SNAPSHOT | sed -e "s#\$SEMVER#\${CSP_VER_VAR}.\\1.\\2.\${GIT_COMMIT_COUNT}\\4#"`
 
