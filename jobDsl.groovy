@@ -100,7 +100,7 @@ modules.each { Map module ->
 
                 # release version as MAJOR.MINOR.GIT_COMMIT_COUNT.SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-                RELEASE_VER_VAR=`echo \$WITHOUT_SNAPSHOT | sed -e "s#\$SEMVER#\${CSP_VER_VAR}\\1.\\2.\${GIT_COMMIT_COUNT}\\4#"`
+                RELEASE_VER_VAR=`echo \$WITHOUT_SNAPSHOT | sed -e "s#\$SEMVER#\${CSP_VER_VAR}.\\1.\\2.\${GIT_COMMIT_COUNT}\\4#"`
 
                 # next version as MAJOR.MINOR.[GIT_COMMIT_COUNT+1].SUFFIX
                 NEXT_VER_VAR=`echo \$PROJECT_VERSION_VAR | sed -e "s#\$SEMVER#\\1.\\2.\$((GIT_COMMIT_COUNT+1))\\4#"`
