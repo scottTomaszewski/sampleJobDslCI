@@ -235,43 +235,42 @@ modules.each { Map module ->
     }
 }
 
-// Build bom with aggregate of all modules
-job(buildModulesBom) {
-    description("Job for build a bom that aggregates all the latest successful releases for modules")
+masterBranches.each { masterBranch ->
+    // Build bom with aggregate of all modules
+    job("${buildModulesBom}-${masterBranch}") {
+        description("Job for build a bom that aggregates all the latest successful releases for modules on ${masterBranch}")
 
-    scm {
-        github("scottTomaszewski/bom")
-    }
+        scm {
+            github("scottTomaszewski/bom")
+        }
 
-    wrappers {
-        // clean workspace
-        preBuildCleanup()
+        wrappers {
+            // clean workspace
+            preBuildCleanup()
 
-        // Add maven settings.xml from Managed Config Files
-        configFiles {
-            mavenSettings('MySettings') {
-                variable('SETTINGS_CONFIG')
+            // Add maven settings.xml from Managed Config Files
+            configFiles {
+                mavenSettings('MySettings') {
+                    variable('SETTINGS_CONFIG')
+                }
             }
         }
-    }
 
-    steps {
-        maven("""resources:resources
-            -PbuildBom
-            -Dversion.ds=0.0.37
-            -Dversion.ba=0.0.16
-            -Dversion.ms=0.0.10
-        """)
+        steps {
+            // TODO: fix hard-coded "8"
+            maven("-PbuildBom -Dversion.platform=8")
+            maven("""versions:use-latest-releases
+                -DallowMajorUpdates=false
+                -U
+                -s settings.xml
+            """)
 
-        def bomDir = "target/classes/"
 
-        def script = """
+            def script = """
                 # prepare git
                 git config user.name "Jenkins"
                 git config user.email "DevOps_Team@FIXME.com"
                 git config push.default simple
-
-                cd ${bomDir}
 
                 # figure out git commit count
                 GIT_COMMIT_COUNT=`git rev-list --all --count`
@@ -307,28 +306,29 @@ job(buildModulesBom) {
 
                 # print out description for Description Setter jenkins plugin
                 echo "DESCRIPTION v\$RELEASE_VER_VAR (CDM=\$CDM_VAR)"
-        """
-        shell script
+            """
+            shell script
 
-        environmentVariables {
-            propertiesFile("${bomDir}env.properties")
-        }
-        buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
-        wrappers {
-            buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
-        }
+            environmentVariables {
+                propertiesFile("env.properties")
+            }
+            buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
+            wrappers {
+                buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
+            }
 
-        // set release version on poms (temp: add branchPath since using same git repo) and commit
-        maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'", "${bomDir}")
+            // set release version on poms (temp: add branchPath since using same git repo) and commit
+            maven("versions:set -DnewVersion=\'\${RELEASE_VERSION}\'")
 
-        // push up artifact to release repo
-        maven("""deploy:deploy-file
+            // push up artifact to release repo
+            maven("""deploy:deploy-file
             -Durl=${nexusUrl}/content/repositories/staging/
             -DrepositoryId=nexus
             -Dfile=pom.xml
             -DpomFile=pom.xml
             -s \${SETTINGS_CONFIG}
-        """, "${bomDir}")
+        """)
 
+        }
     }
 }
