@@ -75,6 +75,10 @@ modules.each { Map module ->
                 git config user.email "DevOps_Team@FIXME.com"
                 git config push.default simple
 
+                # git plugin checkouts to detached head, fix that
+                # https://issues.jenkins-ci.org/browse/JENKINS-6856
+                git checkout $branch
+
                 # figure out git commit count
                 GIT_COMMIT_COUNT=`git rev-list --all --count`
 
