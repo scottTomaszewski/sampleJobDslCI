@@ -262,7 +262,7 @@ masterBranches.each { masterBranch ->
             maven("""versions:use-latest-releases
                 -DallowMajorUpdates=false
                 -U
-                -s settings.xml
+                -s \${SETTINGS_CONFIG}
             """)
 
 
