@@ -10,3 +10,8 @@
     * Could have multiple threads run their stuff, build variables, then print them to their own
     env.properties file.  At the end (figuring this part out might be non-trivial?), read in all the
        env.properties files.
+
+* Automatically create flows/builds/releases/whatever for aggregting modules across not only
+platform releases, but also cdm versions
+    * ex: bom is created for all modules on v8.  See if you can also create separate boms for
+    v8-cdm1.2.3 vs v8-cdm4.5.6
