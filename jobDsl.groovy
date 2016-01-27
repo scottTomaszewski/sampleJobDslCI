@@ -78,6 +78,11 @@ modules.each { Map module ->
                 # figure out git commit count
                 GIT_COMMIT_COUNT=`git rev-list --all --count`
 
+                # figure out csp version from branch name
+                GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+                VERSION_REGEX="[0-9A-Za-z-]*-v\\([0-9]*\\)[0-9A-Za-z-]*"
+                CSP_VER_VAR=`echo $GIT_BRANCH | sed -e "s#$VERSION_REGEX#\\1#"`
+
                 # evaluate cdm version from property
                 CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
 
@@ -91,7 +96,7 @@ modules.each { Map module ->
 
                 # release version as MAJOR.MINOR.GIT_COMMIT_COUNT.SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-                RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
+                RELEASE_VER_VAR=`echo $WITHOUT_SNAPSHOT | sed -e "s#$SEMVER#${CSP_VER_VAR}\\1.\\2.${GIT_COMMIT_COUNT}\\4#"`
 
                 # next version as MAJOR.MINOR.[GIT_COMMIT_COUNT+1].SUFFIX
                 NEXT_VER_VAR=`echo $PROJECT_VERSION_VAR | sed -e "s#$SEMVER#\\1.\\2.$((GIT_COMMIT_COUNT+1))\\4#"`
@@ -101,6 +106,7 @@ modules.each { Map module ->
 
                 # Add properties for EnvInject jenkins plugin
                 echo "CDM=$CDM_VAR" >> env.properties
+                echo "CSP=$CSP_VER_VAR" >> env.properties
                 echo "PROJECT_VERSION=$PROJECT_VERSION_VAR" >> env.properties
                 echo "PROJECT_GROUP_ID=$PROJECT_GROUP_ID_VAR" >> env.properties
                 echo "PROJECT_ARTIFACT_ID=$PROJECT_ARTIFACT_ID_VAR" >> env.properties
@@ -108,7 +114,7 @@ modules.each { Map module ->
                 echo "NEXT_VERSION=$NEXT_VER_VAR" >> env.properties
 
                 # print out description for Description Setter jenkins plugin
-                echo "DESCRIPTION v$RELEASE_VER_VAR (CDM=$CDM_VAR)"
+                echo "DESCRIPTION v$RELEASE_VER_VAR (CSP=v${#CSP_VERSION}, CDM=$CDM_VAR)"
                 '''
                 shell script
 
