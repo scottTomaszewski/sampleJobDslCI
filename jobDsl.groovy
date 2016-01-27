@@ -1,7 +1,8 @@
+def masterBranches = ['master-v8', 'master-v9']
 def modules = [
-        [name: 'ds', repo: 'dis', branches: ['master', 'feature']],
-        [name: 'ms', repo: 'ms', branches: ['master']],
-        [name: 'ba', repo: 'ba', branches: ['master']],
+        [name: 'ds', repo: 'dis', branches: masterBranches],
+        [name: 'ms', repo: 'ms', branches: masterBranches],
+        [name: 'ba', repo: 'ba', branches: masterBranches],
         //[name: 'if', repo: 'ba', branches: ['master']],
         //[name: 'cs', repo: 'ba', branches: ['master']],
         //[name: 'is', repo: 'ba', branches: ['master']],
