@@ -260,28 +260,33 @@ masterBranches.each { masterBranch ->
         }
 
         steps {
+            // insert platform version into each module dependency version
+            // ex: <version>PLATFORM_VERSION</version> will become <version>8</version>
             maven("-PbuildBom -Dversion.platform=${platformVersion}")
+
+            // update module versions to pull latest for their major version
+            // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
             maven("versions:use-latest-releases -DallowMajorUpdates=false -U -s \${SETTINGS_CONFIG}")
 
+            // bom version will be PLATFORM_VERSION.BUILD_NUMBER
             def RELEASE_VERSION = "${platformVersion}.\${BUILD_NUMBER}"
 
             buildDescription("", "$RELEASE_VERSION")
             wrappers {
-                buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
+                buildName('#${BUILD_NUMBER} - $RELEASE_VERSION')
             }
 
             // set release version on poms (temp: add branchPath since using same git repo) and commit
             maven("versions:set -DnewVersion=\'${RELEASE_VERSION}\'")
 
-            // push up artifact to release repo
+            // push up bom artifact to release repo
             maven("""deploy:deploy-file
-            -Durl=${nexusUrl}/content/repositories/staging/
-            -DrepositoryId=nexus
-            -Dfile=pom.xml
-            -DpomFile=pom.xml
-            -s \${SETTINGS_CONFIG}
-        """)
-
+                -Durl=${nexusUrl}/content/repositories/staging/
+                -DrepositoryId=nexus
+                -Dfile=pom.xml
+                -DpomFile=pom.xml
+                -s \${SETTINGS_CONFIG}
+            """)
         }
     }
 }
