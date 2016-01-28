@@ -237,6 +237,7 @@ modules.each { Map module ->
             }
 
             publishers {
+                // Trigger new platform integration flow
                 // NOTE: if you change this, you also need to change the platformFolder variable
                 downstream("${branch} Platform Integration/${buildModulesBom}", 'SUCCESS')
             }
