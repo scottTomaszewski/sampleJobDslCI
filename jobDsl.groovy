@@ -269,17 +269,11 @@ masterBranches.each { masterBranch ->
     }
 
     job(promoteBomToReleaseJob) {
-        description("Job for promoting successful $branchPath bom releases from the staging artifact repository to the public releases artifact repository")
+        description("Job for promoting successful $masterBranch bom releases from the staging artifact repository to the public releases artifact repository")
 
         wrappers cleanAndAddMavenSettings()
 
         steps promoteArtifact("jar", nexusUrl, true)
-
-        publishers {
-            // Trigger new platform integration flow
-            // NOTE: if you change this, you also need to change the platformFolder variable
-            downstream("${branch} Platform Integration/${buildModulesBom}", 'SUCCESS')
-        }
     }
 }
 
