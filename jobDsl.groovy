@@ -209,6 +209,7 @@ masterBranches.each { masterBranch ->
     // identify platform version from branch name
     def matcher = masterBranch =~ ".*-v([0-9]*)"
     def platformVersion = matcher[0][1]
+
     // NOTE: if you change this, you also need to change the downstream from promoteToRelease
     def platformFolder = "${masterBranch} Platform Integration"
 
@@ -240,6 +241,9 @@ masterBranches.each { masterBranch ->
 
         wrappers cleanAndAddMavenSettings()
 
+        // bom version will be PLATFORM_VERSION.BUILD_NUMBER
+        def RELEASE_VERSION = "${platformVersion}.\${BUILD_NUMBER}"
+
         steps {
             def script = """
                 PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
@@ -262,9 +266,6 @@ masterBranches.each { masterBranch ->
             // update module versions to pull latest for their major version
             // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
             maven("versions:use-latest-releases -DallowMajorUpdates=false -U -s \${SETTINGS_CONFIG}")
-
-            // bom version will be PLATFORM_VERSION.BUILD_NUMBER
-            def RELEASE_VERSION = "${platformVersion}.\${BUILD_NUMBER}"
 
             buildDescription("", "$RELEASE_VERSION")
             wrappers {
