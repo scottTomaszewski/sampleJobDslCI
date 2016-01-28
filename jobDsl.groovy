@@ -247,9 +247,27 @@ masterBranches.each { masterBranch ->
     // identify platform version from branch name
     def matcher = masterBranch =~ ".*-v([0-9]*)"
     def platformVersion = matcher[0][1]
+    def platformFolder = "${masterBranch} Platform Integration"
+
+    folder(platformFolder) {
+        description "Jobs associated with the ${masterBranch} branches for all modules"
+    }
+
+    def buildBomJob = "${platformFolder}/${buildModulesBom}-${masterBranch}"
+
+    buildPipelineView("${platformFolder}/pipeline") {
+        filterBuildQueue()
+        filterExecutors()
+        title("${platformFolder} CI Pipeline")
+        displayedBuilds(5)
+        selectedJob(buildBomJob)
+        alwaysAllowManualTrigger()
+        showPipelineParameters()
+        refreshFrequency(5)
+    }
 
     // Build bom with aggregate of all modules
-    job("${buildModulesBom}-${masterBranch}") {
+    job(buildBomJob) {
         description("Job for build a bom that aggregates all the latest successful releases for modules on ${masterBranch}")
 
         scm {
