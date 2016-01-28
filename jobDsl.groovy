@@ -241,6 +241,20 @@ masterBranches.each { masterBranch ->
         wrappers cleanAndAddMavenSettings()
 
         steps {
+            def script = """
+                PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
+                PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
+
+                # Add properties for EnvInject jenkins plugin
+                echo "PROJECT_GROUP_ID=\$PROJECT_GROUP_ID_VAR" >> env.properties
+                echo "PROJECT_ARTIFACT_ID=\$PROJECT_ARTIFACT_ID_VAR" >> env.properties
+            """
+            shell script
+
+            environmentVariables {
+                propertiesFile('env.properties')
+            }
+
             // insert platform version into each module dependency version
             // ex: <version>PLATFORM_VERSION</version> will become <version>8</version>
             maven("-PbuildBom -Dversion.platform=${platformVersion}")
@@ -275,7 +289,7 @@ masterBranches.each { masterBranch ->
                 trigger(promoteBomToReleaseJob) {
                     condition('SUCCESS')
                     parameters {
-                        predefinedProp("ARTIFACT_VERSION", "\${RELEASE_VERSION}")
+                        predefinedProp("ARTIFACT_VERSION", "${RELEASE_VERSION}")
                         predefinedProp("ARTIFACT_GROUP_ID", "\${PROJECT_GROUP_ID}")
                         predefinedProp("ARTIFACT_ARTIFACT_ID", "\${PROJECT_ARTIFACT_ID}")
                     }
