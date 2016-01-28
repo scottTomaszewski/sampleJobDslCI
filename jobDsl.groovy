@@ -238,6 +238,7 @@ modules.each { Map module ->
 }
 
 masterBranches.each { masterBranch ->
+    // identify platform version from branch name
     def matcher = masterBranch =~ ".*-v([0-9]*)"
     def platformVersion = matcher[0][1]
 
