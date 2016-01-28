@@ -212,7 +212,7 @@ modules.each { Map module ->
                 }
             }
 
-            steps promoteArtifact("jar")
+            steps promoteArtifact("jar", ${nexusUrl})
 
             publishers {
                 // Trigger new platform integration flow
@@ -299,7 +299,7 @@ masterBranches.each { masterBranch ->
     }
 }
 
-Closure promoteArtifact(String packaging) {
+Closure promoteArtifact(String packaging, String nexusUrl) {
     return {
         shell """
             # pull down artifact
