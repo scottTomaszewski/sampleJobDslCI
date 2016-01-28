@@ -273,7 +273,7 @@ masterBranches.each { masterBranch ->
 
         wrappers cleanAndAddMavenSettings()
 
-        steps promoteArtifact("jar", nexusUrl, true)
+        steps promoteArtifact("pom", nexusUrl, true)
     }
 }
 
