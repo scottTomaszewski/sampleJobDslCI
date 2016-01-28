@@ -36,7 +36,7 @@ modules.each { Map module ->
         def integrationTests = "$branchPath/integration-tests"
         def promoteToRelease = "$branchPath/promote-to-release"
 
-        buildPipelineView("$branchPath/pipeline") {
+        def pipelineClosure = {
             filterBuildQueue()
             filterExecutors()
             title("$branchPath CI Pipeline")
@@ -46,6 +46,9 @@ modules.each { Map module ->
             showPipelineParameters()
             refreshFrequency(5)
         }
+
+        buildPipelineView("$modulePath/pipeline") pipelineClosure
+        buildPipelineView("$modulePath/pipeline") pipelineClosure
 
         job(buildAndReleaseToStaging) {
             description("Job for testing $branchPath then releasing successful builds to the staging artifact repository")
