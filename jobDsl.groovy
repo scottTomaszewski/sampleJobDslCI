@@ -290,24 +290,21 @@ Closure promoteArtifact(String packaging, String nexusUrl, boolean isPom) {
             mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
                 -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:${packaging} \
                 -DoutputDirectory=. \
-                -s \${SETTINGS_CONFIG}
-        """
+                -s \${SETTINGS_CONFIG}"""
         if (!isPom) {
             script += """
             # pull down artifact pom
             mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
                 -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
                 -DoutputDirectory=. \
-                -s \${SETTINGS_CONFIG}
-            """
+                -s \${SETTINGS_CONFIG}"""
         }
         script += """
             # push up artifact to release repo
             mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
                -DrepositoryId=nexus \
                -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.${packaging} \
-               -s \${SETTINGS_CONFIG}
-        """
+               -s \${SETTINGS_CONFIG}"""
         script += isPom ? "" : " -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom"
         shell script
     }
