@@ -316,6 +316,7 @@ masterBranches.each { masterBranch ->
 // usage: step promoteArtifact("jar", "http://nexus.domain.com")
 Closure promoteArtifact(String packaging, String nexusUrl, boolean isPom) {
     return {
+        // TODO: make GAV variable for reuse, cleanup
         def script = """
             # pull down artifact
             mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
@@ -331,12 +332,13 @@ Closure promoteArtifact(String packaging, String nexusUrl, boolean isPom) {
                 -s \${SETTINGS_CONFIG}"""
         }
         script += """
-            # push up artifact to release repo
-            mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
-               -DrepositoryId=nexus \
-               -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.${packaging} \
-               -s \${SETTINGS_CONFIG}"""
-        script += isPom ? "" : " -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom"
+        # push up artifact to release repo
+        mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
+           -DrepositoryId=nexus \
+           -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.${packaging} \
+           -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
+           -s \${SETTINGS_CONFIG}"""
+
         shell script
     }
 }
