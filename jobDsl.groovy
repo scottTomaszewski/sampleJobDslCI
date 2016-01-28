@@ -236,8 +236,8 @@ modules.each { Map module ->
 }
 
 masterBranches.each { masterBranch ->
-    // TODO: need to figure this out programatically somehow
-    def platformVersion = "8"
+    def matcher = masterBranch =~ ".*-v([0-9]*)"
+    def platformVersion = matcher[0][1]
 
     // Build bom with aggregate of all modules
     job("${buildModulesBom}-${masterBranch}") {
