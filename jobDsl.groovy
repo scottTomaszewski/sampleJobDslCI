@@ -13,6 +13,8 @@ def modules = [
 
 def nexusUrl = "http://192.168.99.100:32770"
 def buildModulesBom = "buildBom"
+def promoteBom = "promoteBom"
+
 
 modules.each { Map module ->
     def modulePath = module.name
@@ -189,7 +191,7 @@ modules.each { Map module ->
 
             wrappers cleanAndAddMavenSettings()
 
-            steps promoteArtifact("jar", nexusUrl)
+            steps promoteArtifact("jar", nexusUrl, false)
 
             publishers {
                 // Trigger new platform integration flow
@@ -212,6 +214,7 @@ masterBranches.each { masterBranch ->
     }
 
     def buildBomJob = "${platformFolder}/${buildModulesBom}"
+    def promoteBomToReleaseJob = "${platformFolder}/${promoteBom}"
 
     buildPipelineView("${platformFolder}/pipeline") {
         filterBuildQueue()
@@ -264,6 +267,20 @@ masterBranches.each { masterBranch ->
             """)
         }
     }
+
+    job(promoteBomToReleaseJob) {
+        description("Job for promoting successful $branchPath bom releases from the staging artifact repository to the public releases artifact repository")
+
+        wrappers cleanAndAddMavenSettings()
+
+        steps promoteArtifact("jar", nexusUrl, true)
+
+        publishers {
+            // Trigger new platform integration flow
+            // NOTE: if you change this, you also need to change the platformFolder variable
+            downstream("${branch} Platform Integration/${buildModulesBom}", 'SUCCESS')
+        }
+    }
 }
 
 // ---------------
@@ -272,28 +289,33 @@ masterBranches.each { masterBranch ->
 
 // promotion step
 // usage: step promoteArtifact("jar", "http://nexus.domain.com")
-Closure promoteArtifact(String packaging, String nexusUrl) {
+Closure promoteArtifact(String packaging, String nexusUrl, boolean isPom) {
     return {
-        shell """
+        def script = """
             # pull down artifact
             mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
                 -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:${packaging} \
                 -DoutputDirectory=. \
                 -s \${SETTINGS_CONFIG}
-
+        """
+        if (!isPom) {
+            script += """
             # pull down artifact pom
             mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
                 -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
                 -DoutputDirectory=. \
                 -s \${SETTINGS_CONFIG}
-
+            """
+        }
+        script += """
             # push up artifact to release repo
             mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
                -DrepositoryId=nexus \
                -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.${packaging} \
-               -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
                -s \${SETTINGS_CONFIG}
         """
+        script += isPom ? "" : " -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom"
+        shell script
     }
 }
 
