@@ -184,10 +184,12 @@ modules.each { Map module ->
                 downstreamParameterized {
                     trigger(promoteToRelease) {
                         condition('SUCCESS')
-                        predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
-                        predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
-                        predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
-                        predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
+                        parameters {
+                            predefinedProp("ARTIFACT_BUILD_NUMBER", "\${BUILD_NUMBER}")
+                            predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
+                            predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
+                            predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
+                        }
                     }
                 }
             }
