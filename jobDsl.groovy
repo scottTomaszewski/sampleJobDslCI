@@ -61,7 +61,7 @@ modules.each { Map module ->
                 scm '* * * * *'
             }
 
-            wrappers cleanAndAddMavenSettings()
+            wrappers cleanAndAddPublicMavenSettings()
 
             steps {
                 def script = """
@@ -164,7 +164,7 @@ modules.each { Map module ->
                 github(repo, branch)
             }
 
-            wrappers cleanAndAddMavenSettings()
+            wrappers cleanAndAddPublicMavenSettings()
 
             steps {
                 shell "echo 'Running integration tests.  Yay.'"
@@ -192,7 +192,7 @@ modules.each { Map module ->
         job(promoteToRelease) {
             description("Job for promoting successful $branchPath releases from the staging artifact repository to the public releases artifact repository")
 
-            wrappers cleanAndAddMavenSettings()
+            wrappers cleanAndAddStagingMavenSettings()
 
             steps promoteArtifact("jar", nexusUrl, false)
 
@@ -239,7 +239,7 @@ masterBranches.each { masterBranch ->
             github("scottTomaszewski/bom")
         }
 
-        wrappers cleanAndAddMavenSettings()
+        wrappers cleanAndAddPublicMavenSettings()
 
         // bom version will be PLATFORM_VERSION.BUILD_NUMBER
         def RELEASE_VERSION = "${platformVersion}.\${BUILD_NUMBER}"
@@ -302,7 +302,7 @@ masterBranches.each { masterBranch ->
     job(promoteBomToReleaseJob) {
         description("Job for promoting successful $masterBranch bom releases from the staging artifact repository to the public releases artifact repository")
 
-        wrappers cleanAndAddMavenSettings()
+        wrappers cleanAndAddStagingMavenSettings()
 
         steps promoteArtifact("pom", nexusUrl, true)
     }
@@ -341,15 +341,25 @@ Closure promoteArtifact(String packaging, String nexusUrl, boolean isPom) {
     }
 }
 
-// Clean workspace and add maven settings file
-Closure cleanAndAddMavenSettings() {
+// Clean workspace and add maven settings file for public releases
+Closure cleanAndAddPublicMavenSettings() {
+    return cleanAndAddMavenSettings('MySettings')
+}
+
+// Clean workspace and add maven settings file for staging releases
+Closure cleanAndAddStagingMavenSettings() {
+    return cleanAndAddMavenSettings('StagingSettings')
+}
+
+// use one of the above ones
+Closure cleanAndAddMavenSettings(String name) {
     return {
         // clean workspace
         preBuildCleanup()
 
         // Add maven settings.xml from Managed Config Files
         configFiles {
-            mavenSettings('MySettings') {
+            mavenSettings(name) {
                 variable('SETTINGS_CONFIG')
             }
         }
