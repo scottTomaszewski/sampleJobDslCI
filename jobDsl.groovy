@@ -56,17 +56,7 @@ modules.each { Map module ->
                 scm '* * * * *'
             }
 
-            wrappers {
-                // clean workspace
-                preBuildCleanup()
-
-                // Add maven settings.xml from Managed Config Files
-                configFiles {
-                    mavenSettings('MySettings') {
-                        variable('SETTINGS_CONFIG')
-                    }
-                }
-            }
+            wrappers cleanAndAddMavenSettings()
 
             steps {
                 def script = """
@@ -169,10 +159,7 @@ modules.each { Map module ->
                 github(repo, branch)
             }
 
-            wrappers {
-                // clean workspace
-                preBuildCleanup()
-            }
+            wrappers cleanAndAddMavenSettings()
 
             steps {
                 shell "echo 'Running integration tests.  Yay.'"
@@ -200,17 +187,7 @@ modules.each { Map module ->
         job(promoteToRelease) {
             description("Job for promoting successful $branchPath releases from the staging artifact repository to the public releases artifact repository")
 
-            wrappers {
-                // clean workspace
-                preBuildCleanup()
-
-                // Add maven settings.xml from Managed Config Files
-                configFiles {
-                    mavenSettings('MySettings') {
-                        variable('SETTINGS_CONFIG')
-                    }
-                }
-            }
+            wrappers cleanAndAddMavenSettings()
 
             steps promoteArtifact("jar", nexusUrl)
 
@@ -255,17 +232,7 @@ masterBranches.each { masterBranch ->
             github("scottTomaszewski/bom")
         }
 
-        wrappers {
-            // clean workspace
-            preBuildCleanup()
-
-            // Add maven settings.xml from Managed Config Files
-            configFiles {
-                mavenSettings('MySettings') {
-                    variable('SETTINGS_CONFIG')
-                }
-            }
-        }
+        wrappers cleanAndAddMavenSettings()
 
         steps {
             // insert platform version into each module dependency version
@@ -327,6 +294,21 @@ Closure promoteArtifact(String packaging, String nexusUrl) {
                -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
                -s \${SETTINGS_CONFIG}
         """
+    }
+}
+
+// Clean workspace and add maven settings file
+Closure cleanAndAddMavenSettings() {
+    return {
+        // clean workspace
+        preBuildCleanup()
+
+        // Add maven settings.xml from Managed Config Files
+        configFiles {
+            mavenSettings('MySettings') {
+                variable('SETTINGS_CONFIG')
+            }
+        }
     }
 }
 
