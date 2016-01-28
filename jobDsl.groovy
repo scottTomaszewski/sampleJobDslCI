@@ -14,6 +14,31 @@ def modules = [
 def nexusUrl = "http://192.168.99.100:32770"
 def buildModulesBom = "buildBom"
 
+Closure promoteArtifact(String packaging, String nexusUrl) {
+    return {
+        shell """
+            # pull down artifact
+            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+                -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:${packaging} \
+                -DoutputDirectory=. \
+                -s \${SETTINGS_CONFIG}
+
+            # pull down artifact pom
+            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+                -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
+                -DoutputDirectory=. \
+                -s \${SETTINGS_CONFIG}
+
+            # push up artifact to release repo
+            mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
+               -DrepositoryId=nexus \
+               -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.${packaging} \
+               -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
+               -s \${SETTINGS_CONFIG}
+        """
+    }
+}
+
 modules.each { Map module ->
     def modulePath = module.name
     def repo = "scottTomaszewski/$module.repo"
@@ -299,27 +324,4 @@ masterBranches.each { masterBranch ->
     }
 }
 
-Closure promoteArtifact(String packaging, String nexusUrl) {
-    return {
-        shell """
-            # pull down artifact
-            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
-                -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:${packaging} \
-                -DoutputDirectory=. \
-                -s \${SETTINGS_CONFIG}
 
-            # pull down artifact pom
-            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
-                -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
-                -DoutputDirectory=. \
-                -s \${SETTINGS_CONFIG}
-
-            # push up artifact to release repo
-            mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
-               -DrepositoryId=nexus \
-               -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.${packaging} \
-               -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
-               -s \${SETTINGS_CONFIG}
-        """
-    }
-}
