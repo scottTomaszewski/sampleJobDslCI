@@ -85,7 +85,7 @@ modules.each { Map module ->
                 # figure out csp version from branch name
                 GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
                 VERSION_REGEX="[0-9A-Za-z-]*-v\\([0-9]*\\)[0-9A-Za-z-]*"
-                CSP_VER_VAR=`echo \$GIT_BRANCH | sed -e "s#\$VERSION_REGEX#\\1#"`
+                PLATFORM_VER_VAR=`echo \$GIT_BRANCH | sed -e "s#\$VERSION_REGEX#\\1#"`
 
                 # evaluate cdm version from property
                 CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
@@ -100,7 +100,7 @@ modules.each { Map module ->
 
                 # release version as CSP.MAJOR.MINOR.[GIT_COMMIT_COUNT]SUFFIX
                 SEMVER="[^0-9]*\\([0-9]*\\)[.]\\([0-9]*\\)[.]\\([0-9]*\\)\\([0-9A-Za-z-]*\\)"
-                RELEASE_VER_VAR=`echo \$WITHOUT_SNAPSHOT | sed -e "s#\$SEMVER#\${CSP_VER_VAR}.\\1.\\2.\${GIT_COMMIT_COUNT}\\4#"`
+                RELEASE_VER_VAR=`echo \$WITHOUT_SNAPSHOT | sed -e "s#\$SEMVER#\${PLATFORM_VER_VAR}.\\1.\\2.\${GIT_COMMIT_COUNT}\\4#"`
 
                 # next version as MAJOR.MINOR.[GIT_COMMIT_COUNT+1].SUFFIX
                 NEXT_VER_VAR=`echo \$PROJECT_VERSION_VAR | sed -e "s#\$SEMVER#\\1.\\2.\$((GIT_COMMIT_COUNT+1))\\4#"`
@@ -110,7 +110,7 @@ modules.each { Map module ->
 
                 # Add properties for EnvInject jenkins plugin
                 echo "CDM=\$CDM_VAR" >> env.properties
-                echo "CSP=\$CSP_VER_VAR" >> env.properties
+                echo "PLATFORM_VERSION=\$PLATFORM_VER_VAR" >> env.properties
                 echo "PROJECT_VERSION=\$PROJECT_VERSION_VAR" >> env.properties
                 echo "PROJECT_GROUP_ID=\$PROJECT_GROUP_ID_VAR" >> env.properties
                 echo "PROJECT_ARTIFACT_ID=\$PROJECT_ARTIFACT_ID_VAR" >> env.properties
@@ -155,6 +155,7 @@ modules.each { Map module ->
                             predefinedProp("ARTIFACT_VERSION", "\${RELEASE_VERSION}")
                             predefinedProp("ARTIFACT_GROUP_ID", "\${PROJECT_GROUP_ID}")
                             predefinedProp("ARTIFACT_ARTIFACT_ID", "\${PROJECT_ARTIFACT_ID}")
+                            predefinedProp("PLATFORM_VERSION", "\${PLATFORM_VERSION}")
                         }
                     }
                 }
@@ -189,6 +190,7 @@ modules.each { Map module ->
                             predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
                             predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
                             predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
+                            predefinedProp("PLATFORM_VERSION", "\${PLATFORM_VERSION}")
                         }
                     }
                 }
@@ -232,6 +234,10 @@ modules.each { Map module ->
                        -s \${SETTINGS_CONFIG}
                 """
                 shell script
+            }
+
+            publishers {
+                downstream("${buildModulesBom}-${branch}", 'SUCCESS')
             }
         }
     }
