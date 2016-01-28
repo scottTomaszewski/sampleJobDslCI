@@ -47,8 +47,8 @@ modules.each { Map module ->
             refreshFrequency(5)
         }
 
-        buildPipelineView("$modulePath/pipeline", pipelineClosure)
-        buildPipelineView("$modulePath/pipeline", pipelineClosure)
+        buildPipelineView("$modulePath/$branch pipeline", pipelineClosure)
+        buildPipelineView("$branchPath/pipeline", pipelineClosure)
 
         job(buildAndReleaseToStaging) {
             description("Job for testing $branchPath then releasing successful builds to the staging artifact repository")
