@@ -12,7 +12,7 @@ def modules = [
 ]
 
 def nexusUrl = "http://192.168.99.100:32770"
-def buildModulesBom = "buildModulesBom"
+def buildModulesBom = "buildBom"
 
 modules.each { Map module ->
     def modulePath = module.name
@@ -237,7 +237,8 @@ modules.each { Map module ->
             }
 
             publishers {
-                downstream("${buildModulesBom}-${branch}", 'SUCCESS')
+                // NOTE: if you change this, you also need to change the platformFolder variable
+                downstream("${branch} Platform Integration/${buildModulesBom}", 'SUCCESS')
             }
         }
     }
@@ -247,13 +248,14 @@ masterBranches.each { masterBranch ->
     // identify platform version from branch name
     def matcher = masterBranch =~ ".*-v([0-9]*)"
     def platformVersion = matcher[0][1]
+    // NOTE: if you change this, you also need to change the downstream from promoteToRelease
     def platformFolder = "${masterBranch} Platform Integration"
 
     folder(platformFolder) {
         description "Jobs associated with the ${masterBranch} branches for all modules"
     }
 
-    def buildBomJob = "${platformFolder}/${buildModulesBom}-${masterBranch}"
+    def buildBomJob = "${platformFolder}/${buildModulesBom}"
 
     buildPipelineView("${platformFolder}/pipeline") {
         filterBuildQueue()
