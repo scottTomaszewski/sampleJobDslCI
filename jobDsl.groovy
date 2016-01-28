@@ -237,7 +237,7 @@ modules.each { Map module ->
                 }
             }
 
-            steps promoteArtifact("jar", ${nexusUrl})
+            steps promoteArtifact("jar", nexusUrl)
 
             publishers {
                 // Trigger new platform integration flow
