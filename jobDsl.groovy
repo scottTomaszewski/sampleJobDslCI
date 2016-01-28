@@ -266,6 +266,19 @@ masterBranches.each { masterBranch ->
                 -s \${SETTINGS_CONFIG}
             """)
         }
+
+        publishers {
+            downstreamParameterized {
+                trigger(promoteBomToReleaseJob) {
+                    condition('SUCCESS')
+                    parameters {
+                        predefinedProp("ARTIFACT_VERSION", "\${RELEASE_VERSION}")
+                        predefinedProp("ARTIFACT_GROUP_ID", "\${PROJECT_GROUP_ID}")
+                        predefinedProp("ARTIFACT_ARTIFACT_ID", "\${PROJECT_ARTIFACT_ID}")
+                    }
+                }
+            }
+        }
     }
 
     job(promoteBomToReleaseJob) {
