@@ -212,29 +212,7 @@ modules.each { Map module ->
                 }
             }
 
-            steps {
-                def script = """
-                    # pull down artifact
-                    mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
-                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:jar \
-                        -DoutputDirectory=. \
-                        -s \${SETTINGS_CONFIG}
-
-                    # pull down artifact pom
-                    mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
-                        -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
-                        -DoutputDirectory=. \
-                        -s \${SETTINGS_CONFIG}
-
-                    # push up artifact to release repo
-                    mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
-                       -DrepositoryId=nexus \
-                       -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.jar \
-                       -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
-                       -s \${SETTINGS_CONFIG}
-                """
-                shell script
-            }
+            steps promoteArtifact("jar")
 
             publishers {
                 // Trigger new platform integration flow
@@ -318,5 +296,30 @@ masterBranches.each { masterBranch ->
                 -s \${SETTINGS_CONFIG}
             """)
         }
+    }
+}
+
+Closure promoteArtifact(String packaging) {
+    return {
+        shell """
+            # pull down artifact
+            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+                -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:${packaging} \
+                -DoutputDirectory=. \
+                -s \${SETTINGS_CONFIG}
+
+            # pull down artifact pom
+            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+                -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
+                -DoutputDirectory=. \
+                -s \${SETTINGS_CONFIG}
+
+            # push up artifact to release repo
+            mvn deploy:deploy-file -Durl=${nexusUrl}/content/repositories/releases/ \
+               -DrepositoryId=nexus \
+               -Dfile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.${packaging} \
+               -DpomFile=\${ARTIFACT_ARTIFACT_ID}-\${ARTIFACT_VERSION}.pom \
+               -s \${SETTINGS_CONFIG}
+        """
     }
 }
