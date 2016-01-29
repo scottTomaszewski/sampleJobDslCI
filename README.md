@@ -16,7 +16,6 @@ platform releases, but also cdm versions
     * ex: bom is created for all modules on v8.  See if you can also create separate boms for
     v8-cdm1.2.3 vs v8-cdm4.5.6
 * Cleanup descriptions to be useful from the pipeline view
-* Get bom promotion working
 * look into getting a global view for each platform release
     * (All module platform branches flows) -> bom -> bomPromotion
     * Delivery pipeline plugin?
