@@ -3,12 +3,6 @@ def modules = [
         [name: 'ds', repo: 'dis', branches: masterBranches],
         [name: 'ms', repo: 'ms', branches: masterBranches],
         [name: 'ba', repo: 'ba', branches: masterBranches],
-        //[name: 'if', repo: 'ba', branches: ['master']],
-        //[name: 'cs', repo: 'ba', branches: ['master']],
-        //[name: 'is', repo: 'ba', branches: ['master']],
-        //[name: 'ts', repo: 'ba', branches: ['master']],
-        //[name: 'dm', repo: 'ba', branches: ['master']],
-        //[name: 'io', repo: 'ba', branches: ['master']],
 ]
 
 def nexusUrl = "http://192.168.99.100:32770"
