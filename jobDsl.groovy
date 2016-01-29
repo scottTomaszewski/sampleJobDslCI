@@ -316,7 +316,6 @@ masterBranches.each { masterBranch ->
 // usage: step promoteArtifact("jar", "http://nexus.domain.com")
 Closure promoteArtifact(String packaging, String nexusUrl, boolean isPom) {
     return {
-        // TODO: make GAV variable for reuse, cleanup
         def script = """
             # pull down artifact
             mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
