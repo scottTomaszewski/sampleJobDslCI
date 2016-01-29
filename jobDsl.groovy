@@ -8,7 +8,9 @@ def modules = [
 def nexusUrl = "http://192.168.99.100:32770"
 def buildModulesBom = "buildBom"
 def promoteBom = "promoteBom"
-
+def stageBuild = "Build"
+def stageIntegration = "Integration Tests"
+def stagePromoteMod = "Promote"
 
 modules.each { Map module ->
     def modulePath = module.name
@@ -46,6 +48,8 @@ modules.each { Map module ->
 
         job(buildAndReleaseToStaging) {
             description("Job for testing $branchPath then releasing successful builds to the staging artifact repository")
+
+            deliveryPipelineConfiguration(stageBuild, "build ${branch}")
 
             scm {
                 github(repo, branch)
