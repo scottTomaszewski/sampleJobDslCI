@@ -20,3 +20,4 @@ platform releases, but also cdm versions
     * (All module platform branches flows) -> bom -> bomPromotion
     * Delivery pipeline plugin?
     * Build flow pluign?
+* add manual step for promotion of bom
