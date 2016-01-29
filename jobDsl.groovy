@@ -223,7 +223,7 @@ masterBranches.each { masterBranch ->
     def promoteBomToReleaseJob = "${platformFolder}/${promoteBom}"
 
     deliveryPipelineView("${platformFolder}/delivery pipeline") {
-        name("${masterBranch} delivery pipeline")
+        name("${masterBranch}-delivery-pipeline")
         description("Delivery pipeline for ${masterBranch}")
         pipelineInstances(1)
         showAggregatedPipeline(true)
