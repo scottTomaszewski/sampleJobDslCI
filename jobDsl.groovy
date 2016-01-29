@@ -318,14 +318,14 @@ Closure promoteArtifact(String packaging, String nexusUrl, boolean isPom) {
     return {
         def script = """
             # pull down artifact
-            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+            mvn dependency:copy \
                 -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:${packaging} \
                 -DoutputDirectory=. \
                 -s \${SETTINGS_CONFIG}"""
         if (!isPom) {
             script += """
             # pull down artifact pom
-            mvn org.apache.maven.plugins:maven-dependency-plugin:copy \
+            mvn dependency:copy \
                 -Dartifact=\${ARTIFACT_GROUP_ID}:\${ARTIFACT_ARTIFACT_ID}:\${ARTIFACT_VERSION}:pom \
                 -DoutputDirectory=. \
                 -s \${SETTINGS_CONFIG}"""
