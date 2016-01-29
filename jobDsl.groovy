@@ -8,9 +8,9 @@ def modules = [
 def nexusUrl = "http://192.168.99.100:32770"
 def buildModulesBom = "buildBom"
 def promoteBom = "promoteBom"
-def stageBuild = "Build"
-def stageIntegration = "Integration Tests"
-def stagePromoteMod = "Promote"
+def stageModule = "Module"
+def stagePlatform = "Platform"
+
 
 modules.each { Map module ->
     def modulePath = module.name
@@ -49,7 +49,7 @@ modules.each { Map module ->
         job(buildAndReleaseToStaging) {
             description("Job for testing $branchPath then releasing successful builds to the staging artifact repository")
 
-            deliveryPipelineConfiguration(stageBuild, "build ${branch}")
+            deliveryPipelineConfiguration(stageModule, "Build ${modulePath}")
 
             scm {
                 github(repo, branch)
@@ -158,6 +158,8 @@ modules.each { Map module ->
         job(integrationTests) {
             description("Job for running integration tests for $branchPath")
 
+            deliveryPipelineConfiguration(stageModule, "Integration test ${modulePath}")
+
             scm {
                 github(repo, branch)
             }
@@ -189,6 +191,8 @@ modules.each { Map module ->
 
         job(promoteToRelease) {
             description("Job for promoting successful $branchPath releases from the staging artifact repository to the public releases artifact repository")
+
+            deliveryPipelineConfiguration(stageModule, "Promote ${modulePath}")
 
             wrappers cleanAndAddStagingMavenSettings()
 
@@ -232,6 +236,8 @@ masterBranches.each { masterBranch ->
     // Build bom with aggregate of all modules
     job(buildBomJob) {
         description("Job for build a bom that aggregates all the latest successful releases for modules on ${masterBranch}")
+
+        deliveryPipelineConfiguration(stagePlatform, "Build bom")
 
         scm {
             github("scottTomaszewski/bom")
@@ -299,6 +305,8 @@ masterBranches.each { masterBranch ->
 
     job(promoteBomToReleaseJob) {
         description("Job for promoting successful $masterBranch bom releases from the staging artifact repository to the public releases artifact repository")
+
+        deliveryPipelineConfiguration(stagePlatform, "Promote bom")
 
         wrappers cleanAndAddStagingMavenSettings()
 
