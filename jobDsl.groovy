@@ -222,7 +222,29 @@ masterBranches.each { masterBranch ->
     def buildBomJob = "${platformFolder}/${buildModulesBom}"
     def promoteBomToReleaseJob = "${platformFolder}/${promoteBom}"
 
-    buildPipelineView("${platformFolder}/pipeline") {
+    deliveryPipelineView("${platformFolder}/delivery pipeline") {
+        name("${masterBranch} delivery pipeline")
+        description("Delivery pipeline for ${masterBranch}")
+        pipelineInstances(1)
+        showAggregatedPipeline(true)
+        columns(1)
+        updateInterval(2)
+        enableManualTriggers(true)
+        showAvatars(false)
+        showChangeLog(true)
+        pipelines {
+            modules.each { Map module ->
+                def modulePath = module.name
+                def repo = "scottTomaszewski/$module.repo"
+                module.branches.each { branch ->
+                    def branchPath = "$modulePath/$branch"
+                    component(modulePath, "$branchPath/build-to-staging")
+                }
+            }
+        }
+    }
+
+    buildPipelineView("${platformFolder}/build pipeline") {
         filterBuildQueue()
         filterExecutors()
         title("${platformFolder} CI Pipeline")
