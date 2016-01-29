@@ -236,11 +236,7 @@ masterBranches.each { masterBranch ->
         pipelines {
             modules.each { Map module ->
                 def modulePath = module.name
-                def repo = "scottTomaszewski/$module.repo"
-                module.branches.each { branch ->
-                    def branchPath = "$modulePath/$branch"
-                    component(modulePath, "$branchPath/build-to-staging")
-                }
+                component(modulePath, "$modulePath/$masterBranch/build-to-staging")
             }
         }
     }
