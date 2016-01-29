@@ -87,8 +87,8 @@ modules.each { Map module ->
 
                 # evaluate declared project info
                 PROJECT_VERSION_VAR=${mvnEval('project.version')}
-                PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
-                PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
+                PROJECT_GROUP_ID_VAR=${mvnEval('project.groupId')}
+                PROJECT_ARTIFACT_ID_VAR=${mvnEval('project.artifactId')}
 
                 # remove "-SNAPSHOT" from project version
                 WITHOUT_SNAPSHOT=\${PROJECT_VERSION_VAR%-SNAPSHOT}
@@ -246,8 +246,8 @@ masterBranches.each { masterBranch ->
 
         steps {
             def script = """
-                PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
-                PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
+                PROJECT_GROUP_ID_VAR=${mvnEval('project.groupId')}
+                PROJECT_ARTIFACT_ID_VAR=${mvnEval('project.artifactId')}
 
                 # Add properties for EnvInject jenkins plugin
                 echo "PROJECT_GROUP_ID=\$PROJECT_GROUP_ID_VAR" >> env.properties
