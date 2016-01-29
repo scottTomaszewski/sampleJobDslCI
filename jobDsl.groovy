@@ -86,7 +86,7 @@ modules.each { Map module ->
                 CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
 
                 # evaluate declared project info
-                PROJECT_VERSION_VAR=`mvn help:evaluate -Dexpression=project.version|grep -Ev \'(^\\[|Download\\w+:)\'`
+                PROJECT_VERSION_VAR=${mvnEval('project.version')}
                 PROJECT_GROUP_ID_VAR=`mvn help:evaluate -Dexpression=project.groupId|grep -Ev '(^\\[|Download\\w+:)'`
                 PROJECT_ARTIFACT_ID_VAR=`mvn help:evaluate -Dexpression=project.artifactId|grep -Ev '(^\\[|Download\\w+:)'`
 
@@ -365,6 +365,10 @@ Closure cleanAndAddMavenSettings(String name) {
             }
         }
     }
+}
+
+String mvnEval(String mavenProperty){
+    return "`mvn help:evaluate -Dexpression=${mavenProperty}|grep -Ev '(^\\[|Download\\w+:)'`"
 }
 
 
