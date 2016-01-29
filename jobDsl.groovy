@@ -223,14 +223,16 @@ masterBranches.each { masterBranch ->
     def promoteBomToReleaseJob = "${platformFolder}/${promoteBom}"
 
     deliveryPipelineView("${platformFolder}/delivery pipeline") {
-        pipelineInstances(5)
+        pipelineInstances(0)
         showAggregatedPipeline()
-        columns(2)
+        columns(1)
         sorting(Sorting.TITLE)
         updateInterval(2)
         enableManualTriggers()
         showAvatars()
         showChangeLog()
+        showDescription()
+        showTotalBuildTime()
         pipelines {
             modules.each { Map module ->
                 def modulePath = module.name
