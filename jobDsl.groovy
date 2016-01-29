@@ -1,8 +1,8 @@
 def masterBranches = ['master-v8', 'master-v9']
 def modules = [
-        [name: 'ds', repo: 'dis', branches: masterBranches],
-        [name: 'ms', repo: 'ms', branches: masterBranches],
-        [name: 'ba', repo: 'ba', branches: masterBranches],
+    [name: 'ds', repo: 'dis', branches: masterBranches],
+    [name: 'ms', repo: 'ms', branches: masterBranches],
+    [name: 'ba', repo: 'ba', branches: masterBranches],
 ]
 
 def nexusUrl = "http://192.168.99.100:32770"
@@ -395,5 +395,3 @@ Closure cleanAndAddMavenSettings(String name) {
 String mvnEval(String mavenProperty){
     return "`mvn help:evaluate -Dexpression=${mavenProperty}|grep -Ev '(^\\[|Download\\w+:)'`"
 }
-
-
