@@ -267,27 +267,27 @@ masterBranches.each { masterBranch ->
         // bom version will be PLATFORM_VERSION.BUILD_NUMBER
         def RELEASE_VERSION = "${platformVersion}.\${BUILD_NUMBER}"
 
-//        /*steps {
-//            def script = """
-//                PROJECT_GROUP_ID_VAR=${mvnEval('project.groupId')}
-//                PROJECT_ARTIFACT_ID_VAR=${mvnEval('project.artifactId')}
-//
-//                # Add properties for EnvInject jenkins plugin
-//                echo "PROJECT_GROUP_ID=\$PROJECT_GROUP_ID_VAR" >> env.properties
-//                echo "PROJECT_ARTIFACT_ID=\$PROJECT_ARTIFACT_ID_VAR" >> env.properties
-//            """
-//            shell script
-//
-//            environmentVariables {
-//                propertiesFile('env.properties')
-//            }
-//
-//            // insert platform version into each module dependency version
-//            // ex: <version>PLATFORM_VERSION</version> will become <version>8</version>
-//            maven("-PbuildBom -Dversion.platform=${platformVersion}")
-//
-//            // update module versions to pull latest for their major version
-//            // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
+        steps {
+            def script = """
+                PROJECT_GROUP_ID_VAR=${mvnEval('project.groupId')}
+                PROJECT_ARTIFACT_ID_VAR=${mvnEval('project.artifactId')}
+
+                # Add properties for EnvInject jenkins plugin
+                echo "PROJECT_GROUP_ID=\$PROJECT_GROUP_ID_VAR" >> env.properties
+                echo "PROJECT_ARTIFACT_ID=\$PROJECT_ARTIFACT_ID_VAR" >> env.properties
+            """
+            shell script
+
+            environmentVariables {
+                propertiesFile('env.properties')
+            }
+
+            // insert platform version into each module dependency version
+            // ex: <version>PLATFORM_VERSION</version> will become <version>8</version>
+            maven("-PbuildBom -Dversion.platform=${platformVersion}")
+
+            // update module versions to pull latest for their major version
+            // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
 //            def script2 = """
 //                #mvn versions:use-latest-releases \
 //                #-DallowMajorUpdates=false \
@@ -304,24 +304,24 @@ masterBranches.each { masterBranch ->
 //            """
 //
 //            shell script2
-//
-//            buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \0")
-//            wrappers {
-//                buildName('#${BUILD_NUMBER} - $RELEASE_VERSION')
-//            }
-//
-//            // set release version on poms (temp: add branchPath since using same git repo) and commit
-//            maven("versions:set -DnewVersion=\'${RELEASE_VERSION}\'")
-//
-//            // push up bom artifact to release repo
-//            maven("""deploy:deploy-file
-//                -Durl=${nexusUrl}/content/repositories/staging/
-//                -DrepositoryId=nexus
-//                -Dfile=pom.xml
-//                -DpomFile=pom.xml
-//                -s \${SETTINGS_CONFIG}
-//            """)
-//        }*/
+
+            buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \0")
+            wrappers {
+                buildName('#${BUILD_NUMBER} - $RELEASE_VERSION')
+            }
+
+            // set release version on poms (temp: add branchPath since using same git repo) and commit
+            maven("versions:set -DnewVersion=\'${RELEASE_VERSION}\'")
+
+            // push up bom artifact to release repo
+            maven("""deploy:deploy-file
+                -Durl=${nexusUrl}/content/repositories/staging/
+                -DrepositoryId=nexus
+                -Dfile=pom.xml
+                -DpomFile=pom.xml
+                -s \${SETTINGS_CONFIG}
+            """)
+        }
 
         publishers {
             downstreamParameterized {
