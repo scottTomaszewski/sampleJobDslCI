@@ -288,7 +288,7 @@ masterBranches.each { masterBranch ->
 
             // update module versions to pull latest for their major version
             // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
-            shell """
+            def script2 = """
                 mvn versions:use-latest-releases \\
                 -DallowMajorUpdates=false \\
                 -U -s \${SETTINGS_CONFIG} \\
@@ -302,6 +302,8 @@ masterBranches.each { masterBranch ->
 
                 cat updated.txt
             """
+
+            shell script2
 
             buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \0")
             wrappers {
