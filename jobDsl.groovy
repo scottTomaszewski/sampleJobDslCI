@@ -213,7 +213,7 @@ masterBranches.each { masterBranch ->
     def platformVersion = matcher[0][1]
 
     // NOTE: if you change this, you also need to change the downstream from promoteToRelease
-    def platformFolder = "${masterBranch} Platform Integration"
+    def platformFolder = "${masterBranch}-Platform-Integration"
 
     folder(platformFolder) {
         description "Jobs associated with the ${masterBranch} branches for all modules"
