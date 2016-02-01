@@ -295,8 +295,10 @@ masterBranches.each { masterBranch ->
                 | tee versions.txt
 
                 echo "DESCRIPTION" >> updated.txt
+
                 sed -n 's/\\[INFO\\] Updated \\(.*:.*:.*\\)[0-9] to version \\(.*\\)/\\1\\2/p' \
-                < versions.txt >> updated.txt \
+                < versions.txt >> updated.txt
+
                 cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' >> description.txt
 
                 cat description.txt
