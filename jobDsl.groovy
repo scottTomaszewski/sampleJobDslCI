@@ -296,16 +296,15 @@ masterBranches.each { masterBranch ->
 
                 echo "DESCRIPTION" >> updated.txt
                 sed -n 's/\\[INFO\\] Updated \\(.*:.*:.*\\)[0-9] to version \\(.*\\)/\\1\\2/p' \
-                < versions.txt \
-                | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' \
-                >> updated.txt
+                < versions.txt >> updated.txt \
+                cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' >> description.txt
 
-                cat updated.txt
+                cat description.txt
             """
 
             shell script2
 
-            buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \\0")
+            buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \\1")
             wrappers {
                 buildName('#${BUILD_NUMBER} - $RELEASE_VERSION')
             }
