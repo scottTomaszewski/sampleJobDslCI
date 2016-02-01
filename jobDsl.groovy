@@ -313,7 +313,7 @@ masterBranches.each { masterBranch ->
                 buildName('#${BUILD_NUMBER} - $RELEASE_VERSION')
             }
 
-            // set release version on poms (temp: add branchPath since using same git repo) and commit
+            // set release version on poms
             maven("versions:set -DnewVersion=\'${RELEASE_VERSION}\'")
 
             // push up bom artifact to release repo
