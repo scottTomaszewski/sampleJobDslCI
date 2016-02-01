@@ -235,7 +235,7 @@ masterBranches.each { masterBranch ->
         showTotalBuildTime()
         pipelines {
             modules.each { Map module ->
-                component(module.name, "$modulePath/$masterBranch/build-to-staging")
+                component(module.name, "$module.name/$masterBranch/build-to-staging")
             }
         }
     }
