@@ -288,22 +288,22 @@ masterBranches.each { masterBranch ->
 
             // update module versions to pull latest for their major version
             // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
-//            def script2 = """
-//                #mvn versions:use-latest-releases \
-//                #-DallowMajorUpdates=false \
-//                #-U -s \${SETTINGS_CONFIG} \
-//                #| tee versions.txt
-//
-//                #echo "DESCRIPTION" >> updated.txt
-//                #sed -n 's/\\[INFO\\] Updated \\(.*:.*:.*\\)[0-9] to version \\(.*\\)/\\1\\2/p' \
-//                #< versions.txt \
-//                #| sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' \
-//                #>> updated.txt
-//
-//                #cat updated.txt
-//            """
-//
-//            shell script2
+            def script2 = """
+                #mvn versions:use-latest-releases \
+                #-DallowMajorUpdates=false \
+                #-U -s \${SETTINGS_CONFIG} \
+                #| tee versions.txt
+
+                #echo "DESCRIPTION" >> updated.txt
+                #sed -n 's/\\[INFO\\] Updated \\(.*:.*:.*\\)[0-9] to version \\(.*\\)/\\1\\2/p' \
+                #< versions.txt \
+                #| sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' \
+                #>> updated.txt
+
+                #cat updated.txt
+            """
+
+            shell script2
 
             //buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \0")
             wrappers {
