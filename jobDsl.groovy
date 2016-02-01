@@ -286,7 +286,7 @@ masterBranches.each { masterBranch ->
             // ex: <version>PLATFORM_VERSION</version> will become <version>8</version>
             maven("-PbuildBom -Dversion.platform=${platformVersion}")
 
-            // update module versions to pull latest for their major version
+            // update module versions to pull latest for their major version, then print description
             // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
             shell """
                 mvn versions:use-latest-releases \
@@ -294,13 +294,17 @@ masterBranches.each { masterBranch ->
                 -U -s \${SETTINGS_CONFIG} \
                 | tee versions.txt
 
+                # add prefix for buildDescriptionPlugin regex
                 echo "DESCRIPTION" >> updated.txt
 
+                # read output from previous command and strip all but version update lines, format
                 sed -n 's/\\[INFO\\] Updated \\(.*:.*:\\).*:[0-9]* to version \\(.*\\)/\\1\\2/p' \
                 < versions.txt >> updated.txt
 
+                # replace newline characters with spaces
                 cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' >> description.txt
 
+                # print description for plugin
                 cat description.txt
             """
 
