@@ -305,7 +305,7 @@ masterBranches.each { masterBranch ->
 //
 //            shell script2
 
-            buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \0")
+            //buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \0")
             wrappers {
                 buildName('#${BUILD_NUMBER} - $RELEASE_VERSION')
             }
