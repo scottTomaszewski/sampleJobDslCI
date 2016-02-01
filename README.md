@@ -17,3 +17,4 @@ platform releases, but also cdm versions
     v8-cdm1.2.3 vs v8-cdm4.5.6
 * Cleanup descriptions to be useful from the pipeline view
 * add manual step for promotion of bom
+* Adds parameterized args to each job that takes in env vars
