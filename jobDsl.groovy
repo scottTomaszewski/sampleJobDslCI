@@ -316,6 +316,8 @@ masterBranches.each { masterBranch ->
             // set release version on poms
             maven("versions:set -DnewVersion=\'${RELEASE_VERSION}\'")
 
+            maven("install")
+
             // push up bom artifact to release repo
             maven("""deploy:deploy-file
                 -Durl=${nexusUrl}/content/repositories/staging/
