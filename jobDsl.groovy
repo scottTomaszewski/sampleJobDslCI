@@ -301,7 +301,7 @@ masterBranches.each { masterBranch ->
                 sed -n 's/\\[INFO\\] Updated \\(.*:.*:\\).*:[0-9]* to version \\(.*\\)/\\1\\2/p' \
                 < versions.txt >> updated.txt
 
-                # replace newline characters with spaces
+                # replace newline characters with spaces (cross-platform implementation)
                 cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' >> description.txt
 
                 # print description for plugin
