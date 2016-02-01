@@ -288,9 +288,22 @@ masterBranches.each { masterBranch ->
 
             // update module versions to pull latest for their major version
             // ex: <version>8</version> will upgrade to <version>8.1.2.3</version>
-            maven("versions:use-latest-releases -DallowMajorUpdates=false -U -s \${SETTINGS_CONFIG}")
+            shell """
+                mvn versions:use-latest-releases \\
+                -DallowMajorUpdates=false \\
+                -U -s \${SETTINGS_CONFIG} \\
+                | tee versions.txt
 
-            buildDescription("", "$RELEASE_VERSION")
+                echo "DESCRIPTION" >> updated.txt
+                sed -n 's/\\[INFO\\] Updated \\(.*:.*:.*\\)[0-9] to version \\(.*\\)/\\1\\2/p' \\
+                < versions.txt \\
+                | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' \\
+                >> updated.txt
+
+                cat updated.txt
+            """
+
+            buildDescription("DESCRIPTION(.*)", "8.${BUILD_NUMBER} \0")
             wrappers {
                 buildName('#${BUILD_NUMBER} - $RELEASE_VERSION')
             }
