@@ -309,7 +309,7 @@ masterBranches.each { masterBranch ->
                 cat description.txt
             """
 
-            buildDescription(/^DESCRIPTION\s(.*)/, 'bom:8.\${BUILD_NUMBER} <br> \\1')
+            buildDescription(/^DESCRIPTION\s(.*)/, 'bom:8.\${BUILD_NUMBER} \\1')
 
             wrappers {
                 buildName("#\${BUILD_NUMBER} - ${RELEASE_VERSION} triggered by \${ARTIFACT_ARTIFACT_ID}")
