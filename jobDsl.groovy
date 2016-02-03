@@ -303,13 +303,13 @@ masterBranches.each { masterBranch ->
                 < versions.txt >> updated.txt
 
                 # replace newline characters with spaces (cross-platform implementation)
-                cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ /g' >> description.txt
+                cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/<br> /g' >> description.txt
 
                 # print description for plugin
                 cat description.txt
             """
 
-            buildDescription(/^DESCRIPTION\s(.*)/, 'bom:8.\${BUILD_NUMBER} \\1')
+            buildDescription(/^DESCRIPTION\s(.*)/, 'bom:8.\${BUILD_NUMBER} <br> \\1')
 
             wrappers {
                 buildName("#\${BUILD_NUMBER} - ${RELEASE_VERSION} triggered by \${ARTIFACT_ARTIFACT_ID}")
