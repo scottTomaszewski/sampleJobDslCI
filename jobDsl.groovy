@@ -353,7 +353,6 @@ masterBranches.each { masterBranch ->
 
         steps {
             shell "echo 'Running e2e tests.  Yay.'"
-            buildDescription('', 'Cukes passed!  Not yet promoted to release.')
         }
 
         properties{
@@ -372,8 +371,6 @@ masterBranches.each { masterBranch ->
                                 predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
                             }
                         }
-
-                        buildDescription('', 'Artifact promoted to release!')
                     }
                 }
             }
