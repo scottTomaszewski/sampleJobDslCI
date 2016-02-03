@@ -7,6 +7,7 @@ def modules = [
 
 def nexusUrl = "http://192.168.99.100:32770"
 def buildModulesBom = "buildBom"
+def e2eTesting = "end-to-end testing"
 def promoteBom = "promoteBom"
 def stageModule = "Module"
 def stagePlatform = "Platform"
@@ -220,6 +221,7 @@ masterBranches.each { masterBranch ->
     }
 
     def buildBomJob = "${platformFolder}/${buildModulesBom}"
+    def endToEndTestingJob = "${platformFolder}/${e2eTesting}"
     def promoteBomToReleaseJob = "${platformFolder}/${promoteBom}"
 
     deliveryPipelineView("${platformFolder}/delivery pipeline") {
@@ -326,6 +328,31 @@ masterBranches.each { masterBranch ->
                 -DpomFile=pom.xml
                 -s \${SETTINGS_CONFIG}
             """)
+        }
+
+        publishers {
+            downstreamParameterized {
+                trigger(endToEndTestingJob) {
+                    condition('SUCCESS')
+                    parameters {
+                        predefinedProp("ARTIFACT_VERSION", "${RELEASE_VERSION}")
+                        predefinedProp("ARTIFACT_GROUP_ID", "\${PROJECT_GROUP_ID}")
+                        predefinedProp("ARTIFACT_ARTIFACT_ID", "\${PROJECT_ARTIFACT_ID}")
+                    }
+                }
+            }
+        }
+    }
+
+    job(endToEndTestingJob) {
+        description("Job for end-to-end testing $masterBranch releases")
+
+        deliveryPipelineConfiguration(stagePlatform, "End-to-end testing")
+
+        wrappers cleanAndAddStagingMavenSettings()
+
+        steps {
+            shell "echo 'Running e2e tests.  Yay.'"
         }
 
         publishers {
