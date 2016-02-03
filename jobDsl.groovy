@@ -355,14 +355,25 @@ masterBranches.each { masterBranch ->
             shell "echo 'Running e2e tests.  Yay.'"
         }
 
-        publishers {
-            downstreamParameterized {
-                trigger(promoteBomToReleaseJob) {
-                    condition('SUCCESS')
-                    parameters {
-                        predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
-                        predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
-                        predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
+        properties{
+            promotions{
+                promotion {
+                    name('Promote release')
+                    icon('star-gold')
+                    conditions {
+                        manual()
+                    }
+                    actions {
+                        downstreamParameterized {
+                            trigger(promoteBomToReleaseJob) {
+                                condition('SUCCESS')
+                                parameters {
+                                    predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
+                                    predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
+                                    predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
+                                }
+                            }
+                        }
                     }
                 }
             }
