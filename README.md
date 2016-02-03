@@ -18,3 +18,4 @@ platform releases, but also cdm versions
 * Cleanup descriptions to be useful from the pipeline view
 * add manual step for promotion of bom
 * Adds parameterized args to each job that takes in env vars
+* Cleanup job names (add spaces, capitalize)
