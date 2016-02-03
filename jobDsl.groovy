@@ -112,7 +112,7 @@ modules.each { Map module ->
                 echo "NEXT_VERSION=\$NEXT_VER_VAR" >> env.properties
 
                 # print out description for Description Setter jenkins plugin
-                echo "DESCRIPTION v\$RELEASE_VER_VAR (CSP=v\${#CSP_VERSION}, CDM=\$CDM_VAR)"
+                echo "DESCRIPTION v\$RELEASE_VER_VAR (CDM=\$CDM_VAR)"
                 """
                 shell script
 
