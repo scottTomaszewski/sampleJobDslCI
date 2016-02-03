@@ -360,7 +360,7 @@ masterBranches.each { masterBranch ->
                 trigger(promoteBomToReleaseJob) {
                     condition('SUCCESS')
                     parameters {
-                        predefinedProp("ARTIFACT_VERSION", "${RELEASE_VERSION}")
+                        predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
                         predefinedProp("ARTIFACT_GROUP_ID", "\${PROJECT_GROUP_ID}")
                         predefinedProp("ARTIFACT_ARTIFACT_ID", "\${PROJECT_ARTIFACT_ID}")
                     }
