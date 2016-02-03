@@ -361,7 +361,7 @@ masterBranches.each { masterBranch ->
                     name('Promote release')
                     icon('star-gold')
                     conditions {
-                        manual()
+                        manual('')
                     }
                     actions {
                         downstreamParameterized {
