@@ -303,7 +303,7 @@ masterBranches.each { masterBranch ->
                 < versions.txt >> updated.txt
 
                 # replace newline characters with spaces (cross-platform implementation)
-                cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/<br> /g' >> description.txt
+                cat updated.txt | sed -e ':a' -e 'N' -e '\$!ba' -e 's/\\n/ <br>/g' >> description.txt
 
                 # print description for plugin
                 cat description.txt
