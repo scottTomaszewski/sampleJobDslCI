@@ -174,6 +174,7 @@ modules.each { Map module ->
                     buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
                 }
             }
+
             publishers {
                 downstreamParameterized {
                     trigger(promoteToRelease) {
@@ -203,6 +204,20 @@ modules.each { Map module ->
                 // Trigger new platform integration flow
                 // NOTE: if you change this, you also need to change the platformFolder variable
                 downstream("${branch} Platform Integration/${buildModulesBom}", 'SUCCESS')
+            }
+
+            publishers {
+                downstreamParameterized {
+                    trigger("${branch} Platform Integration/${buildModulesBom}") {
+                        condition('SUCCESS')
+                        parameters {
+                            predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
+                            predefinedProp("ARTIFACT_GROUP_ID", "\${ARTIFACT_GROUP_ID}")
+                            predefinedProp("ARTIFACT_ARTIFACT_ID", "\${ARTIFACT_ARTIFACT_ID}")
+                            predefinedProp("ARTIFACT_VERSION", "\${ARTIFACT_VERSION}")
+                        }
+                    }
+                }
             }
         }
     }
