@@ -82,7 +82,7 @@ modules.each { Map module ->
 
                 # evaluate cdm and platform version from property
                 CDM_VAR=${mvnEval('cdm-version')}
-                PLATFORM_VER_VAR=${mvnEval('platform.version')}
+                PLATFORM_VER_VAR=${mvnEval('platform-version')}
 
                 # evaluate declared project info
                 PROJECT_VERSION_VAR=${mvnEval('project.version')}
