@@ -176,7 +176,7 @@ modules.each { Map module ->
 
             steps {
                 shell "echo 'Running integration tests.  Yay.'"
-                buildDescription('', '123/123 cukes pass')
+                buildDescription('', 'Cucumber Test Results: 123/123 pass')
                 wrappers {
                     buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
                 }
@@ -379,7 +379,7 @@ masterBranches.each { masterBranch ->
 
         steps {
             shell "echo 'Running e2e tests.  Yay.'"
-            buildDescription('', '1234/1234 end-to-end tests pass')
+            buildDescription('', 'End-to-end Test Results: 1234/1234 pass')
         }
 
         properties{
