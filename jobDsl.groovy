@@ -79,10 +79,10 @@ modules.each { Map module ->
                 # figure out csp version from branch name
                 GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
                 VERSION_REGEX="[0-9A-Za-z-]*-v\\([0-9]*\\)[0-9A-Za-z-]*"
-                PLATFORM_VER_VAR=`echo \$GIT_BRANCH | sed -e "s#\$VERSION_REGEX#\\1#"`
 
-                # evaluate cdm version from property
-                CDM_VAR=`mvn help:evaluate -Dexpression=cdm-version|grep -Ev \'(^\\[|Download\\w+:)\'`
+                # evaluate cdm and platform version from property
+                CDM_VAR=${mvnEval('cdm-version')}
+                PLATFORM_VER_VAR=${mvnEval('platform.version')}
 
                 # evaluate declared project info
                 PROJECT_VERSION_VAR=${mvnEval('project.version')}
