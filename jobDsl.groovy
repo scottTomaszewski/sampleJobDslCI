@@ -309,7 +309,7 @@ masterBranches.each { masterBranch ->
                 cat description.txt
             """
 
-            buildDescription(/^DESCRIPTION\s(.*)/, 'bom:8.\${BUILD_NUMBER} \\1')
+            buildDescription(/^DESCRIPTION\s(.*)/, "bom:${RELEASE_VERSION} \\1")
 
             wrappers {
                 buildName("#\${BUILD_NUMBER} - ${RELEASE_VERSION} triggered by \${ARTIFACT_ARTIFACT_ID}")
@@ -318,6 +318,7 @@ masterBranches.each { masterBranch ->
             // set release version on poms
             maven("versions:set -DnewVersion=\'${RELEASE_VERSION}\'")
 
+            // ensure that updates are pulled in following steps
             maven("install")
 
             // push up bom artifact to release repo
