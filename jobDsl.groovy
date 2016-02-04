@@ -59,7 +59,7 @@ modules.each { Map module ->
             }
 
             triggers {
-                scm 'H/2 * * * *'
+                scm '0 */3 * * *'
             }
 
             wrappers cleanAndAddPublicMavenSettings()
