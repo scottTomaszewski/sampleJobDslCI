@@ -121,7 +121,9 @@ modules.each { Map module ->
                 environmentVariables {
                     propertiesFile('env.properties')
                 }
+
                 buildDescription(/^DESCRIPTION\s(.*)/, '\\1')
+
                 wrappers {
                     buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
                 }
@@ -174,7 +176,7 @@ modules.each { Map module ->
 
             steps {
                 shell "echo 'Running integration tests.  Yay.'"
-                buildDescription(/^(CDM=.*)\sPROJECT_VERSION=(.*)/, '\\2 (\\1)')
+                buildDescription('', '123/123 cukes pass')
                 wrappers {
                     buildName('#${BUILD_NUMBER} - ${GIT_REVISION, length=8} (${GIT_BRANCH})')
                 }
@@ -377,6 +379,7 @@ masterBranches.each { masterBranch ->
 
         steps {
             shell "echo 'Running e2e tests.  Yay.'"
+            buildDescription('', '1234/1234 end-to-end tests pass')
         }
 
         properties{
