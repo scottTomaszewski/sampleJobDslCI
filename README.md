@@ -21,3 +21,5 @@ platform releases, but also cdm versions
 * Cleanup job names (add spaces, capitalize)
 * Make job for creating new master/develop branch for all modules
 * Make job to create job flow for new branch (for single module)
+* Add pipeline view in each module/branch folder
+* Add descriptions for tests "Cukes: 109/189 pass" or "E2E tests: 109/189 pass"
