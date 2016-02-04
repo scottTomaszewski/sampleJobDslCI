@@ -201,14 +201,9 @@ modules.each { Map module ->
             steps promoteArtifact("jar", nexusUrl, false)
 
             publishers {
-                // Trigger new platform integration flow
-                // NOTE: if you change this, you also need to change the platformFolder variable
-                downstream("${branch} Platform Integration/${buildModulesBom}", 'SUCCESS')
-            }
-
-            publishers {
                 downstreamParameterized {
-                    trigger("${branch} Platform Integration/${buildModulesBom}") {
+                    def platformFolder = platformFolderForBranch(branch)
+                    trigger("${platformFolder}/${buildModulesBom}") {
                         condition('SUCCESS')
                         parameters {
                             predefinedProp("ARTIFACT_BUILD_NUMBER", "\${ARTIFACT_BUILD_NUMBER}")
@@ -229,7 +224,7 @@ masterBranches.each { masterBranch ->
     def platformVersion = matcher[0][1]
 
     // NOTE: if you change this, you also need to change the downstream from promoteToRelease
-    def platformFolder = "${masterBranch} Platform Integration"
+    def platformFolder = platformFolderForBranch(masterBranch)
 
     folder(platformFolder) {
         description "Jobs associated with the ${masterBranch} branches for all modules"
@@ -465,4 +460,8 @@ Closure cleanAndAddMavenSettings(String name) {
 
 String mvnEval(String mavenProperty){
     return "`mvn help:evaluate -Dexpression=${mavenProperty}|grep -Ev '(^\\[|Download\\w+:)'`"
+}
+
+String platformFolderForBranch(String branch) {
+    return "${branch} Platform Integration"
 }
