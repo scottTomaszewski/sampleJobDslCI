@@ -58,10 +58,6 @@ modules.each { Map module ->
                 github(repo, branch)
             }
 
-            triggers {
-                scm '* * * * *'
-            }
-
             wrappers cleanAndAddPublicMavenSettings()
 
             steps {
