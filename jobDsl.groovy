@@ -12,7 +12,6 @@ def promoteBom = "promoteBom"
 def stageModule = "Module"
 def stagePlatform = "Platform"
 
-
 modules.each { Map module ->
     def modulePath = module.name
     def repo = "scottTomaszewski/$module.repo"
@@ -47,6 +46,9 @@ modules.each { Map module ->
         buildPipelineView("$modulePath/$branch pipeline", pipelineClosure)
         buildPipelineView("$branchPath/pipeline", pipelineClosure)
 
+        // -----------------------------
+        // JOB: Module build to staging
+        // -----------------------------
         job(buildAndReleaseToStaging) {
             description("Job for testing $branchPath then releasing successful builds to the staging artifact repository")
 
@@ -156,6 +158,9 @@ modules.each { Map module ->
             }
         }
 
+        // -----------------------------
+        // JOB: Module integration tests
+        // -----------------------------
         job(integrationTests) {
             description("Job for running integration tests for $branchPath")
 
@@ -191,6 +196,9 @@ modules.each { Map module ->
             }
         }
 
+        // ------------------------------
+        // JOB: Module promote to release
+        // ------------------------------
         job(promoteToRelease) {
             description("Job for promoting successful $branchPath releases from the staging artifact repository to the public releases artifact repository")
 
@@ -263,7 +271,9 @@ masterBranches.each { masterBranch ->
         refreshFrequency(5)
     }
 
-    // Build bom with aggregate of all modules
+    // -----------------------------
+    // JOB: Build platform bom
+    // -----------------------------
     job(buildBomJob) {
         description("Job for build a bom that aggregates all the latest successful releases for modules on ${masterBranch}")
 
@@ -355,6 +365,9 @@ masterBranches.each { masterBranch ->
         }
     }
 
+    // -----------------------------
+    // JOB: Platform end-to-end testing
+    // -----------------------------
     job(endToEndTestingJob) {
         description("Job for end-to-end testing $masterBranch releases")
 
@@ -388,6 +401,9 @@ masterBranches.each { masterBranch ->
         }
     }
 
+    // -----------------------------
+    // JOB: Platform promote to release
+    // -----------------------------
     job(promoteBomToReleaseJob) {
         description("Job for promoting successful $masterBranch bom releases from the staging artifact repository to the public releases artifact repository")
 
