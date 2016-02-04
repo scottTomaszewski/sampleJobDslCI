@@ -19,3 +19,5 @@ platform releases, but also cdm versions
 * add manual step for promotion of bom
 * Adds parameterized args to each job that takes in env vars
 * Cleanup job names (add spaces, capitalize)
+* Make job for creating new master/develop branch for all modules
+* Make job to create job flow for new branch (for single module)
