@@ -332,7 +332,7 @@ masterBranches.each { masterBranch ->
             buildDescription(/^DESCRIPTION\s(.*)/, "bom:${RELEASE_VERSION} \\1")
 
             wrappers {
-                buildName("#\${BUILD_NUMBER} - ${RELEASE_VERSION} triggered by \${ARTIFACT_ARTIFACT_ID}")
+                buildName("v${RELEASE_VERSION} triggered by \${ARTIFACT_ARTIFACT_ID}")
             }
 
             // set release version on poms
