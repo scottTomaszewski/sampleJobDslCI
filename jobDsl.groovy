@@ -477,7 +477,7 @@ Closure cleanAndAddMavenSettings(String name) {
     }
 }
 
-String mvnEval(String mavenProperty){
+String mvnEval(String mavenProperty) {
     return "`mvn help:evaluate -Dexpression=${mavenProperty}|grep -Ev '(^\\[|Download\\w+:)'`"
 }
 
